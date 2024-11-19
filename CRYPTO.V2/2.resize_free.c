@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   resize_free.c                                      :+:      :+:    :+:   */
+/*   2.resize_free.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/17 05:32:21 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/17 15:27:50 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/11/18 20:23:51 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -213,4 +213,21 @@ int resize_transactions(t_portfolio *portfolio)
 	portfolio->transactions = new_transactions;
 	portfolio->max_transactions = new_size;
 	return (1);
+}
+
+void free_portfolio_manager(t_portfolio_manager *manager)
+{
+	int i = 0;
+
+	if (!manager)
+		return;
+
+	while (i < manager->portfolio_count)
+	{
+		free_portfolio(manager->portfolios[i]);
+		i++;
+	}
+
+	free(manager->portfolios);
+	free(manager);
 }

@@ -6,16 +6,11 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/14 16:14:49 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/17 16:51:02 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/11/19 01:41:18 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "my_prog.h"
-
-/*
-		FONCTIONS D'ACHAT/UPDATES D'ASSETS
-			- CONFIGURER LES ACHATS AVEC $ OU APPORT DE CASH.
-*/
 
 t_point	*create_asset(t_portfolio *portfolio, char *nom, char *date, float prix_achat, float quantite)
 {
@@ -29,11 +24,6 @@ t_point	*create_asset(t_portfolio *portfolio, char *nom, char *date, float prix_
 	if (prix_achat < 0)
 	{
 		printf(RED "Erreur:" RESET "Le prix d'achat doit être supérieur à 0.\n");
-		return (NULL);
-	}
-	if (quantite <= 0)
-	{
-		printf(RED "Erreur:" RESET "La quantité doit être supérieure à 0.\n");
 		return (NULL);
 	}
 	if (portfolio->asset_count >= portfolio->max_assets)
@@ -81,7 +71,7 @@ t_point	*create_asset(t_portfolio *portfolio, char *nom, char *date, float prix_
 	new_actif->historique_quantite[0] = quantite;
 	new_actif->historique_diff_begin[0] = 0;
 	new_actif->historique_percent_begin[0] = 0;
-	new_actif->date_count = 1;
+	new_actif->date_count = 0;
 	portfolio->assets[portfolio->asset_count++] = new_actif;
 	return (new_actif);
 }
@@ -113,8 +103,14 @@ void	update_position(t_point *actif, float nouveau_prix, float nouvelle_quantite
 
 	cout_total_ancien = actif->prix_moyen * actif->historique_quantite[actif->date_count - 1];
 	cout_total_nouveau = nouveau_prix * nouvelle_quantite;
+	if (nouvelle_quantite == 0)
+		quantite_totale = actif->historique_quantite[actif->date_count - 1];
+	else
+	{
 	quantite_totale = actif->historique_quantite[actif->date_count - 1] + nouvelle_quantite;
 	actif->prix_moyen = (cout_total_ancien + cout_total_nouveau) / quantite_totale;
+	}
+
 	actif->dates[actif->date_count] = ft_strdup(nouvelle_date);
 	if (actif->dates[actif->date_count] == NULL)
 	{
@@ -128,46 +124,56 @@ void	update_position(t_point *actif, float nouveau_prix, float nouvelle_quantite
 	actif->date_count++;
 }
 
-void	update_current_price(t_point *actif, float update_prix, char *date_suivi)
+void update_current_price(t_point *actif, float update_prix, char *date_suivi)
 {
-	float	dernier_prix;
-	float	diff_since_last;
-	float	percent_since_last;
-	int		i;
-	if (actif == NULL)
-		return ;
+	float dernier_prix, diff_since_last, percent_since_last;
+	int i;
+
+	if (!actif || !date_suivi)
+	{
+		printf(RED "Erreur: Actif ou date invalide.\n" RESET);
+		return;
+	}
+
 	if (actif->date_count >= actif->max_dates)
 	{
 		if (!resize_arrays(actif))
 		{
-			printf(RED "Erreur:" RESET "Impossible de redimmensionner l'actif.\n");
-			return ;
+			printf(RED "Erreur: Impossible de redimensionner l'actif.\n" RESET);
+			return;
 		}
 	}
 	actif->historique_prix[actif->date_count] = update_prix;
+    actif->historique_quantite[actif->date_count] = actif->historique_quantite[actif->date_count - 1];
 	actif->historique_diff_begin[actif->date_count] = (update_prix - actif->prix_achat);
 	if (actif->prix_achat != 0)
 		actif->historique_percent_begin[actif->date_count] = (actif->historique_diff_begin[actif->date_count] / actif->prix_achat) * 100;
 	else
 		actif->historique_percent_begin[actif->date_count] = 0;
+
 	if (actif->date_count > 0)
 	{
 		dernier_prix = actif->historique_prix[actif->date_count - 1];
 		diff_since_last = update_prix - dernier_prix;
-		percent_since_last = 0;
-		if (dernier_prix != 0)
-			percent_since_last = (diff_since_last / dernier_prix) * 100;
+		percent_since_last = (dernier_prix != 0) ? (diff_since_last / dernier_prix) * 100 : 0;
+
 		printf("Différence de valeur depuis la dernière MAJ: %.5f\n", diff_since_last);
 		printf("Pourcentage de progression depuis la dernière MAJ: %.5f%%\n", percent_since_last);
 	}
+
 	if (actif->dates[actif->date_count] != NULL)
 	{
 		free(actif->dates[actif->date_count]);
 		actif->dates[actif->date_count] = NULL;
 	}
+
 	actif->dates[actif->date_count] = malloc(ft_strlen(date_suivi) + 1);
 	if (actif->dates[actif->date_count] == NULL)
-		return ;
+	{
+		printf(RED "Erreur: Allocation échouée pour la date %s\n" RESET, date_suivi);
+		return;
+	}
+
 	i = 0;
 	while (date_suivi[i])
 	{
@@ -176,8 +182,9 @@ void	update_current_price(t_point *actif, float update_prix, char *date_suivi)
 	}
 	actif->dates[actif->date_count][i] = '\0';
 	actif->date_count++;
-}
 
+	printf("Debug: Fin de update_current_price pour %s\n", actif->nom);
+}
 /*
 			FONCTIONS DE CALCULS - A COMPLETER -
 */
@@ -231,70 +238,101 @@ void	archive_sale(t_point *asset, t_portfolio *portfolio, float quantity, float 
 	t_sale	*sale;
 	float	sale_value;
 
-	if (asset == NULL || portfolio == NULL || sale_date == NULL)
+	if (!asset || !portfolio || !sale_date || quantity <= 0 || sale_price <= 0)
 	{
-		printf(RED "Erreur:" RESET "Données invalides\n");
-		return ;
+		printf(RED "Erreur:" RESET " Paramètres invalides pour la vente.\n");
+		return;
 	}
-	if (quantity < 0)
-	{
-		printf(RED "Erreur:" RESET "La quantité vendue doit être supérieure à 0.\n");
-		return ;
-	}
-	if (sale_price < 0)
-	{
-		printf(RED "Erreur:" RESET "Le prix de vente doit être supérieur à 0.\n");
-		return ;
-	}
+	// Vérification stricte de la quantité disponible
 	if (quantity > asset->historique_quantite[asset->date_count - 1])
 	{
-		printf(RED "Erreur:" RESET "Quantité de vente supérieure à la quantité disponible.\n");
-		return ;
+		printf(RED "Erreur:" RESET " Quantité de vente supérieure à la quantité disponible.\n");
+		return;
 	}
-	if (asset->sale_count >= asset->max_sales)
+	// Redimensionnement des ventes si nécessaire
+	if (asset->sale_count >= asset->max_sales && !resize_sales(asset))
 	{
-		if (!resize_sales(asset))
-		{
-			printf(RED "Erreur:" RESET "Impossible d'ajouter une nouvelle vente.\n");
-			return ;
-		}
+		printf(RED "Erreur:" RESET " Impossible d'ajouter une nouvelle vente.\n");
+		return;
 	}
-	if (quantity > asset->historique_quantite[asset->date_count - 1])
-	{
-		printf("Quantité de vente supérieure à la quantité détenue.\n");
-		return ;
-	}
+
+	// Enregistrement de la vente
 	sale = &asset->sales[asset->sale_count];
 	sale->nom = ft_strdup(asset->nom);
-	if (sale->nom == NULL)
-	{
-		printf(RED "Erreur d'allocation mémoire lors de l'enregistrement de la vente.\n" RESET);
-		return ;
-	}
 	sale->date = ft_strdup(sale_date);
-	if (sale->date == NULL)
+	if (!sale->nom || !sale->date)
 	{
-		printf(RED "Erreur d'alloction mémoire pour la date de vente.\n" RESET);
-		free(sale->nom);
-		return ;
+		printf(RED "Erreur:" RESET " Allocation mémoire échouée.\n");
+		return;
 	}
+
+	// Calculs pour la vente
 	sale->quantite_vendue = quantity;
 	sale->prix_vente = sale_price;
 	sale->profit_loss_exit = (sale_price - asset->prix_moyen) * quantity;
-	if(asset->prix_moyen != 0)
-		sale->percent_exit = ((sale_price - asset->prix_moyen) / asset->prix_moyen) * 100;
-	else
-		sale->percent_exit = 0;
+	sale->percent_exit = asset->prix_moyen != 0 ? ((sale_price - asset->prix_moyen) / asset->prix_moyen) * 100 : 0;
+
 	sale_value = quantity * sale_price;
-	portfolio->dollar_balance = portfolio->dollar_balance + sale_value;
-	asset->historique_quantite[asset->date_count - 1] = asset->historique_quantite[asset->date_count - 1] - quantity;
+	portfolio->dollar_balance += sale_value;
+
+	// Mise à jour de la quantité
+	asset->historique_quantite[asset->date_count - 1] -= quantity;
 	if (asset->historique_quantite[asset->date_count - 1] <= 0)
 	{
+		asset->historique_quantite[asset->date_count - 1] = 0;
 		asset->is_sold_out = 1;
-		printf("Actif %s vendu intégralement, mais conservé dans le portefeuille.\n", asset->nom);
 	}
+
+	// Incrément du nombre de ventes
 	asset->sale_count++;
-	printf("Vente archivée pour %s :\n", asset->nom);
-	printf("Quantité vendue : %.5f\nPrix de vente : %.5f\n", quantity, sale_price);
-	printf("Bénéfice/Déficit : %.5f\nPourcentage par rapport au prix d'achat moyen : %.5f%%\n", sale->profit_loss_exit, sale->percent_exit);
+	printf(GREEN "Vente enregistrée pour %s : %.2f unités à %.2f.\n" RESET, asset->nom, quantity, sale_price);
 }
+
+/*void	archive_sale(t_point *asset, t_portfolio *portfolio, float quantity, float sale_price, char *sale_date)
+{
+	t_sale	*sale;
+	float	sale_value;
+
+	if (!asset || !portfolio || !sale_date || quantity <= 0 || sale_price <= 0)
+	{
+		printf(RED "Erreur:" RESET " Paramètres invalides pour la vente.\n");
+		return;
+	}
+	if (quantity > asset->historique_quantite[asset->date_count - 1])
+	{
+		printf(RED "Erreur:" RESET " Quantité de vente supérieure à la quantité disponible.\n");
+		return;
+	}
+	if (asset->sale_count >= asset->max_sales && !resize_sales(asset))
+	{
+		printf(RED "Erreur:" RESET " Impossible d'ajouter une nouvelle vente.\n");
+		return;
+	}
+
+	sale = &asset->sales[asset->sale_count];
+	sale->nom = ft_strdup(asset->nom);
+	sale->date = ft_strdup(sale_date);
+	if (!sale->nom || !sale->date)
+	{
+		printf(RED "Erreur:" RESET " Allocation mémoire échouée.\n");
+		return;
+	}
+
+	sale->quantite_vendue = quantity;
+	sale->prix_vente = sale_price;
+	sale->profit_loss_exit = (sale_price - asset->prix_moyen) * quantity;
+	sale->percent_exit = asset->prix_moyen != 0 ? ((sale_price - asset->prix_moyen) / asset->prix_moyen) * 100 : 0;
+
+	sale_value = quantity * sale_price;
+	portfolio->dollar_balance += sale_value;
+
+	asset->historique_quantite[asset->date_count - 1] -= quantity;
+	if (asset->historique_quantite[asset->date_count - 1] <= 0)
+	{
+		asset->historique_quantite[asset->date_count - 1] = 0;
+		asset->is_sold_out = 1;
+	}
+
+	asset->sale_count++;
+	printf(GREEN "Vente enregistrée pour %s : %.2f unités à %.2f.\n" RESET, asset->nom, quantity, sale_price);
+}*/

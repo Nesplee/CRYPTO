@@ -1,58 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   menu.c                                             :+:      :+:    :+:   */
+/*   4.handle_menu.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 16:22:53 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/17 15:34:22 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/11/19 01:43:47 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "my_prog.h"
-
-void	handle_menu(t_portfolio *portfolio)
-{
-	char	choix[3];
-	int		exit_program = 0;
-
-	display_header();
-	while (!exit_program)
-	{
-		display_menu();
-		if(!fgets(choix, sizeof(choix), stdin))
-			continue;
-		if (choix[0] == '1')
-			handle_add_asset(portfolio);
-		else if (choix[0] == '2')
-			handle_update_asset(portfolio);
-		else if (choix[0] == '3')
-			handle_sell_asset(portfolio);
-		else if (choix[0] == '4')
-			display_portfolio_and_summary(portfolio);
-		else if (choix[0] == '5')
-			handle_calculate_profit(portfolio);
-		else if (choix[0] == '6')
-			handle_display_graph(portfolio);
-		else if (choix[0] == '7')
-			handle_export_asset(portfolio);
-		else if (choix[0] == '8')
-			handle_delete_asset(portfolio);
-		else if (choix[0] == '9')
-		{
-			free_portfolio(portfolio);
-			portfolio = load_portfolio("portfolio.txt");
-		}
-		else if (choix[0] == '0')
-		{
-			save_portfolio(portfolio, "portfolio.txt");
-			exit_program = 1;
-		}
-		else
-			printf(RED "Choix invalide. Veuillew réessayer.\n" RESET);
-	}
-}
 
 void	handle_add_asset(t_portfolio *portfolio)
 {
@@ -65,26 +23,33 @@ void	handle_add_asset(t_portfolio *portfolio)
 
 	printf(GRAY "Nom de l'actif : " RESET);
 	scanf("%49s", nom);
+	clear_stdin();
 	while (!is_snake_case(nom))
 	{
 		printf(RED "Erreur:" RESET "Le nom doit être en snake_case (lettres, chiffres, undercore/ 15 carac. max). Réessayez : ");
 		scanf("%49s", nom);
+		clear_stdin();
 	}
 	printf(GRAY "Date d'achat (YYYY-MM-DD) : " RESET);
 	scanf("%11s", date);
+	clear_stdin();
 	while (!is_valid_date(date))
 	{
 		printf(RED "Erreur:" RESET "le format de la date est invalide. Réessayez.\n");
 		printf(GRAY "Date d'achat (YYYY-MM-DD) : " RESET);
 		scanf("%11s", date);
+		clear_stdin();
 	}
 	printf(GRAY "Prix d'achat : " RESET);
 	scanf("%f", &prix);
+	clear_stdin();
 	printf(GRAY "Quantité achetée : " RESET);
 	scanf("%f", &quantite);
+	clear_stdin();
 	total_cost = prix * quantite;
 	printf(YELLOW "Voulez-vous utiliser des dollars locaux pour cet achat? (O/N) : " RESET);
 	scanf("%2s", confirmation);
+	clear_stdin();
 	if (confirmation[0] == 'O' || confirmation[0] == 'o')
 	{
 		if (portfolio->dollar_balance >= total_cost)
@@ -104,6 +69,8 @@ void	handle_add_asset(t_portfolio *portfolio)
 		printf(GREEN "Actif ajouté avec succès!\n" RESET);
 }
 
+
+
 void	handle_update_asset(t_portfolio *portfolio)
 {
 	char	nom[15];
@@ -112,81 +79,221 @@ void	handle_update_asset(t_portfolio *portfolio)
 	float	nouveau_prix;
 	float	nouvelle_quantite;
 	int		i = 0;
-	int		updated = 0;
+	int found = 0;
+
+	if (!portfolio || !portfolio->assets || portfolio->asset_count == 0)
+	{
+		printf(RED "Erreur : Aucun actif disponible pour la mise à jour.\n" RESET);
+		return;
+	}
 
 	printf("Nom de l'actif à mettre à jour : ");
-	scanf("%49s", nom);
+	if (!fgets(nom, sizeof(nom), stdin) || nom[0] == '\n')
+	{
+		printf(RED "Erreur: Lecture du nom échouée.\n" RESET);
+		return;
+	}
+	nom[strcspn(nom, "\n")] = '\0';
+
 	while (i < portfolio->asset_count)
 	{
-		if (ft_strlen(portfolio->assets[i]->nom) > 0 && ft_strcmp(portfolio->assets[i]->nom, nom) == 0)
+		if (!portfolio->assets[i] || !portfolio->assets[i]->nom)
 		{
+			i++;
+			continue;
+		}
+
+		if (ft_strcmp(portfolio->assets[i]->nom, nom) == 0)
+		{
+			found = 1;
 			printf("Souhaitez-vous réaliser un achat? (O/N) : ");
-			scanf("%2s", choix);
+			if (!fgets(choix, sizeof(choix), stdin) || choix[0] == '\n')
+			{
+				printf(RED "Erreur: Lecture échouée.\n" RESET);
+				clear_stdin();
+				i++;
+				continue;
+			}
+			choix[strcspn(choix, "\n")] = '\0'; // Supprime le '\n'
+
 			if (choix[0] == 'O' || choix[0] == 'o')
 			{
 				printf("Nouveau prix : ");
-				scanf("%f", &nouveau_prix);
-				printf("Nouvelle quantité :");
-				scanf("%f", &nouvelle_quantite);
+				if (scanf("%f", &nouveau_prix) != 1)
+				{
+					printf(RED "Erreur: Lecture du prix échouée.\n" RESET);
+					clear_stdin();
+					i++;
+					continue;
+				}
+				clear_stdin();
+
+				printf("Nouvelle quantité : ");
+				if (scanf("%f", &nouvelle_quantite) != 1)
+				{
+					printf(RED "Erreur: Lecture de la quantité échouée.\n" RESET);
+					clear_stdin();
+					i++;
+					continue;
+				}
+				clear_stdin();
+
 				printf("Nouvelle date : ");
-				scanf("%11s", date);
+				if (!fgets(date, sizeof(date), stdin) || date[0] == '\n')
+				{
+					printf(RED "Erreur: Lecture de la date échouée.\n" RESET);
+					clear_stdin();
+					i++;
+					continue;
+				}
+				date[strcspn(date, "\n")] = '\0'; // Supprime le '\n'
+
 				while (!is_valid_date(date))
 				{
-					printf(RED "Erreur:" RESET " Format de date invalide. Réssayez (YYYY-MM-DD) :");
-					scanf("%11s", date);
+					printf(RED "Erreur: Format de date invalide. Réessayez (YYYY-MM-DD) : ");
+					if (!fgets(date, sizeof(date), stdin) || date[0] == '\n')
+					{
+						printf(RED "Erreur: Lecture de la date échouée.\n" RESET);
+						clear_stdin();
+						i++;
+						continue;
+					}
+					date[strcspn(date, "\n")] = '\0'; // Supprime le '\n'
 				}
 				update_position(portfolio->assets[i], nouveau_prix, nouvelle_quantite, date);
+
+				printf(GREEN "Actif '%s' mis à jour avec un nouvel achat.\n" RESET, nom);
 			}
 			else
 			{
 				printf("Nouveau prix : ");
-				scanf("%f", &nouveau_prix);
+				if (scanf("%f", &nouveau_prix) != 1)
+				{
+					printf(RED "Erreur: Lecture du prix échouée.\n" RESET);
+					clear_stdin();
+					i++;
+					continue;
+				}
+				clear_stdin();
+
 				printf("Date de modification (YYYY-MM-DD) : ");
-				scanf("%11s", date);
+				if (!fgets(date, sizeof(date), stdin) || date[0] == '\n')
+				{
+					printf(RED "Erreur: Lecture de la date échouée.\n" RESET);
+					clear_stdin();
+					i++;
+					continue;
+				}
+				date[strcspn(date, "\n")] = '\0'; // Supprime le '\n'
+
 				while (!is_valid_date(date))
 				{
-					printf(RED "Erreur:" RESET " Format de date invalide. Réssayez (YYYY-MM-DD) :");
-					scanf("%11s", date);
+					printf(RED "Erreur: Format de date invalide. Réessayez (YYYY-MM-DD) : ");
+					if (!fgets(date, sizeof(date), stdin) || date[0] == '\n')
+					{
+						printf(RED "Erreur: Lecture de la date échouée.\n" RESET);
+						clear_stdin();
+						i++;
+						continue;
+					}
+					date[strcspn(date, "\n")] = '\0'; // Supprime le '\n'
 				}
+
 				update_current_price(portfolio->assets[i], nouveau_prix, date);
+				printf(GREEN "Actif '%s' mis à jour avec un nouveau prix.\n" RESET, nom);
 			}
-			updated = 1;
-			printf(GREEN "Modification de l'actif %s réussie.\n" RESET, nom);
 		}
 		i++;
 	}
-	if (!updated)
-		printf(RED "Erreur:" RESET " Actif non trouvé.\n");
+
+	if (!found)
+		printf(RED "Erreur: Actif non trouvé.\n" RESET);
+	else
+		printf(GREEN "Modification de l'actif %s réussie.\n" RESET, nom);
+	return ;
 }
+
+/*void	handle_sell_asset(t_portfolio *portfolio)
+{
+	char	nom[15], date[12];
+	float	quantite, prix;
+	int		i = 0, sold = 0;
+
+	printf("Nom de l'actif à vendre : ");
+	scanf("%14s", nom);
+	clear_stdin();
+
+	while (i < portfolio->asset_count && !sold)
+	{
+		if (ft_strcmp(portfolio->assets[i]->nom, nom) == 0)
+		{
+			printf("Quantité à vendre : ");
+			scanf("%f", &quantite);
+			clear_stdin();
+			printf("Prix de vente : ");
+			scanf("%f", &prix);
+			clear_stdin();
+			printf("Date de vente : ");
+			scanf("%11s", date);
+			clear_stdin();
+
+			archive_sale(portfolio->assets[i], portfolio, quantite, prix, date);
+			free_sold_assets(portfolio);
+			sold = 1;
+		}
+		else
+		{
+			i++;
+		}
+	}
+	if (!sold)
+		printf(RED "Erreur:" RESET " Actif non trouvé.\n");
+}*/
 
 void	handle_sell_asset(t_portfolio *portfolio)
 {
-	char	nom[15];
-	char	date[12];
-	float	quantite;
-	float	prix;
-	int		i = 0;
-	int		sold = 0;
+	char	nom[15], date[12];
+	float	quantite, prix;
+	int		i = 0, sold = 0;
 
-	printf("Nom de l'actif à vendre :");
-	scanf("%49s", nom);
-	while (i < portfolio->asset_count)
+	printf("Nom de l'actif à vendre : ");
+	scanf("%14s", nom);
+	clear_stdin();
+
+	while (i < portfolio->asset_count && !sold)
 	{
-		if (ft_strlen(portfolio->assets[i]->nom) > 0 && ft_strcmp(portfolio->assets[i]->nom, nom) == 0)
+		if (ft_strcmp(portfolio->assets[i]->nom, nom) == 0)
 		{
-			printf("Quantité à vendre :");
+			printf("Quantité à vendre : ");
 			scanf("%f", &quantite);
+			clear_stdin();
+
+			// Vérification de la quantité disponible AVANT appel à archive_sale
+			if (quantite > portfolio->assets[i]->historique_quantite[portfolio->assets[i]->date_count - 1])
+			{
+				printf(RED "Erreur:" RESET " Quantité demandée dépasse la quantité disponible.\n");
+				return;
+			}
+
 			printf("Prix de vente : ");
 			scanf("%f", &prix);
+			clear_stdin();
 			printf("Date de vente : ");
 			scanf("%11s", date);
+			clear_stdin();
+
+			// Archivage de la vente
 			archive_sale(portfolio->assets[i], portfolio, quantite, prix, date);
+			free_sold_assets(portfolio);
 			sold = 1;
 		}
-		i++;
+		else
+		{
+			i++;
+		}
 	}
 	if (!sold)
-		printf(RED "Erreur :" RESET "Actif non trouvé.\n");
+		printf(RED "Erreur:" RESET " Actif non trouvé.\n");
 }
 
 void	handle_export_asset(t_portfolio *portfolio)
@@ -198,6 +305,7 @@ void	handle_export_asset(t_portfolio *portfolio)
 
 	printf("Nom de l'actif à exporter : ");
 	scanf("%49s", nom);
+	clear_stdin();
 	while (i < portfolio->asset_count)
 	{
 		if (ft_strcmp(portfolio->assets[i]->nom, nom) == 0)
@@ -205,6 +313,7 @@ void	handle_export_asset(t_portfolio *portfolio)
 			found = 1;
 			printf("Nom du fichier CSV (ex: actif.csv / 20 carac. max) :");
 			scanf("%49s", filename);
+			clear_stdin();
 			export_asset_to_csv(portfolio->assets[i], filename);
 		}
 		i++;
@@ -258,14 +367,17 @@ void	handle_calculate_profit(t_portfolio *portfolio)
 	}
 	printf("Nom de l'actif pour lequel calculer le profit ou le déficit: ");
 	scanf("%49s", nom);
+	clear_stdin();
 	while (i < portfolio->asset_count)
 	{
 		if (ft_strlen(portfolio->assets[i]->nom) > 0 && ft_strcmp(portfolio->assets[i]->nom, nom) == 0)
 		{
 			printf("Index de début (0 à %d) : ", portfolio->assets[i]->date_count - 1);
 			scanf("%d", &start_index);
+			clear_stdin();
 			printf("Index de fin (0 à %d) :", portfolio->assets[i]->date_count - 1);
 			scanf("%d", &end_index);
+			clear_stdin();
 			calculate_profit(portfolio->assets[i], start_index, end_index);
 			found = 1;
 		}
@@ -290,6 +402,7 @@ void handle_delete_asset(t_portfolio *portfolio)
 
 	printf("Souhaitez-vous supprimer tous les actifs vendus ? (O/N) : ");
 	scanf("%2s", choix);
+	clear_stdin();
 
 	if (choix[0] == 'O' || choix[0] == 'o')
 	{
@@ -300,6 +413,7 @@ void handle_delete_asset(t_portfolio *portfolio)
 
 	printf("Nom de l'actif à supprimer : ");
 	scanf("%49s", nom);
+	clear_stdin();
 
 	while (i < portfolio->asset_count)
 	{

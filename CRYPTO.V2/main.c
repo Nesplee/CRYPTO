@@ -6,7 +6,7 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 22:00:11 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/17 01:19:34 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/11/18 02:18:30 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,28 +14,33 @@
 
 int main(void)
 {
-	t_portfolio *portfolio;
+    t_portfolio_manager *manager;
+    int i = 0;
 
-	// Créer un portefeuille avec une capacité initiale de 10 actifs
-	portfolio = create_portfolio(10);
-	if (!portfolio)
-	{
-		printf(RED "Erreur :" RESET " Impossible de créer le portefeuille.\n");
-		return (1);
-	}
+    // Charger ou créer un gestionnaire de portefeuille
+    manager = load_all_portfolios("portfolios.txt");
+    if (manager == NULL)
+    {
+        printf(RED "Erreur: Impossible de créer ou charger le gestionnaire de portefeuille.\n" RESET);
+        return (1);
+    }
 
-	// Charger les données du portefeuille depuis un fichier, si disponible
-	portfolio = load_portfolio("portfolio.txt");
-	if (!portfolio)
-	{
-		printf(YELLOW "Aucun fichier de sauvegarde trouvé. Portefeuille vide initialisé.\n" RESET);
-		portfolio = create_portfolio(10);
-	}
+    // Affichage du menu principal
+    main_menu(manager);
 
-	// Afficher et gérer le menu
-	handle_menu(portfolio);
+    // Libération des portefeuilles
+    while (i < manager->portfolio_count)
+    {
+        free_portfolio(manager->portfolios[i]);
+        manager->portfolios[i] = NULL;
+        i++;
+    }
 
-	// Libérer les ressources et sauvegarder le portefeuille
-	free_portfolio(portfolio);
-	return (0);
+    // Libération du gestionnaire de portefeuille
+    free(manager->portfolios);
+    manager->portfolios = NULL;
+    free(manager);
+    manager = NULL;
+
+    return (0);
 }

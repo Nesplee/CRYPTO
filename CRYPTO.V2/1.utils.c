@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   1.utils.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/13 16:36:40 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/17 14:53:29 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/11/18 14:42:28 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ void	ft_putchar(char c)
 	printf("%c", c);
 }
 
-int	ft_strlen(char *str)
+int	ft_strlen(const char *str)
 {
 	int	i = 0;
 
@@ -114,7 +114,7 @@ int	ft_strcmp(char *s1, char *s2)
 	return (s1[i] - s2[i]);
 }
 
-char	*ft_strdup(char *str)
+char	*ft_strdup(const char *str)
 {
 	char	*duplicate;
 	int		len;
@@ -134,4 +134,34 @@ char	*ft_strdup(char *str)
 	}
 	duplicate[i] = '\0';
 	return (duplicate);
+}
+
+void clear_screen(void)
+{
+	printf("\033[H\033[J"); // Escape code pour effacer l'écran
+}
+
+int get_terminal_width(void)
+{
+	struct winsize w;
+	if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) == -1)
+		return 80;
+	return w.ws_col;
+}
+
+void print_centered(const char *text)
+{
+	int term_width = get_terminal_width();
+	int text_len = ft_strlen(text);
+	int padding = (term_width - text_len) / 2;
+
+	if (padding > 0)
+		printf("%*s%s\n", padding, "", text);
+	else
+		printf("%s\n", text);
+}
+
+void clear_stdin()
+{
+	while (getchar() != '\n' && !feof(stdin));
 }

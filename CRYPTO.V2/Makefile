@@ -6,14 +6,14 @@
 #    By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/11/16 22:36:02 by dinguyen          #+#    #+#              #
-#    Updated: 2024/11/17 16:49:55 by dinguyen         ###   ########.fr        #
+#    Updated: 2024/11/17 19:49:54 by dinguyen         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 CC = gcc
 CFLAGS = -Wall -Werror -Wextra
-SRC = main.c 5.asset_management.c 1.utils.c 4.menu.c 3.displays.c 2.resize_free.c \
-	  7.save_load_export.c 6.portfolio_management.c
+SRC = main.c 5.asset_management.c 1.utils.c 4.handle_menu.c 3.displays.c \
+	  2.resize_free.c 7.save_load_export.c 6.portfolio_management.c 8.main_menu.c
 OBJ = $(SRC:.c=.o)
 NAME = portfolio_manager
 SCRIPT = launcher.sh
