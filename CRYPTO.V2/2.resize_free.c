@@ -6,58 +6,54 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/17 05:32:21 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/18 20:23:51 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/11/19 02:38:53 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "my_prog.h"
 
- static void	safe_free(char **ptr)
+static void safe_free(void **ptr)
 {
-	if (*ptr)
+	if (ptr && *ptr)
 	{
 		free(*ptr);
 		*ptr = NULL;
 	}
 }
 
-static void safe_free_array(void **array, int count)
-{
-	int	i;
 
-	if (array == NULL)
-		return ;
+static void safe_free_array(void ***array, int count)
+{
+	int i;
+
+	if (!array || !*array)
+		return;
 	i = 0;
 	while (i < count)
 	{
-		free(array[i]);
-		array[i] = NULL;
+		if ((*array)[i])
+		{
+			free((*array)[i]);
+			(*array)[i] = NULL;
+		}
 		i++;
 	}
-	free(array);
-	array = NULL;
+	free(*array);
+	*array = NULL;
 }
 
-void	free_asset(t_point *asset)
+void free_asset(t_point *asset)
 {
-	int	i;
+	if (!asset)
+		return;
 
-	if (asset == NULL)
-		return ;
-	safe_free (&asset->nom);
-	safe_free_array((void **)asset->dates, asset->date_count);
-	free(asset->historique_quantite);
-	free(asset->historique_prix);
-	free(asset->historique_diff_begin);
-	free(asset->historique_percent_begin);
-	i = 0;
-	while (i < asset->sale_count)
-	{
-		safe_free(&asset->sales[i].nom);
-		safe_free(&asset->sales[i].date);
-		i++;
-	}
-	free(asset->sales);
+	safe_free((void **)&asset->nom);  // Cast explicite
+	safe_free_array((void ***)&asset->dates, asset->date_count);
+	safe_free((void **)&asset->historique_quantite);
+	safe_free((void **)&asset->historique_prix);
+	safe_free((void **)&asset->historique_diff_begin);
+	safe_free((void **)&asset->historique_percent_begin);
+	safe_free((void **)&asset->sales);
 	free(asset);
 }
 
@@ -75,51 +71,65 @@ void free_sold_assets(t_portfolio *portfolio)
 	}
 }
 
-void	free_portfolio(t_portfolio *portfolio)
+void free_portfolio(t_portfolio *portfolio)
 {
-	int	i;
+	int i;
 
-	if (portfolio == NULL)
-		return ;
+	if (!portfolio)
+		return;
+
 	i = 0;
 	while (i < portfolio->asset_count)
 	{
-		free_asset(portfolio->assets[i]);
+		if (portfolio->assets[i])
+		{
+			free_asset(portfolio->assets[i]);
+			portfolio->assets[i] = NULL; // Empêche un double free
+		}
 		i++;
 	}
+
 	free(portfolio->assets);
+	portfolio->assets = NULL; // Empêche un double free
+
+	free_transactions(portfolio);
 	free(portfolio);
 }
+
 
 void free_transactions(t_portfolio *portfolio)
 {
 	int i;
 
 	if (!portfolio || !portfolio->transactions)
-		return ;
+		return;
+
 	i = 0;
 	while (i < portfolio->transaction_count)
 	{
-		free(portfolio->transactions[i].date);
+		if (portfolio->transactions[i].date)
+		{
+			free(portfolio->transactions[i].date);
+			portfolio->transactions[i].date = NULL; // Empêche un double free
+		}
 		i++;
 	}
 	free(portfolio->transactions);
+	portfolio->transactions = NULL; // Empêche un double free
 }
 
-int	resize_arrays(t_point *asset)
+int resize_arrays(t_point *asset)
 {
-	int		new_size;
-	char	**new_dates;
-	float	*new_prix;
-	float	*new_quantite;
-	float	*new_diff;
-	float	*new_percent;
+	int new_size;
+	char **new_dates;
+	float *new_prix, *new_quantite, *new_diff, *new_percent;
 
-	if (asset == NULL)
+	if (!asset)
 	{
-		printf(RED "Erreur: resize_arays appelé avec un actif NULL.\n" RESET);
-		return (0);
+		printf(RED "Erreur: resize_arrays appelé avec un actif NULL.\n" RESET);
+		return 0;
 	}
+
 	new_size = asset->max_dates * 2;
 	new_dates = (char **)realloc(asset->dates, sizeof(char *) * new_size);
 	new_prix = (float *)realloc(asset->historique_prix, sizeof(float) * new_size);
@@ -129,29 +139,25 @@ int	resize_arrays(t_point *asset)
 
 	if (!new_dates || !new_prix || !new_quantite || !new_diff || !new_percent)
 	{
-		printf(RED "Erreur: Echec de l'allocation mémoir dans resize_arrays pour l'actif '%s'.\n" RESET,asset->nom);
-		printf(YELLOW "Etapes: \n" RESET);
-		if (!new_dates) printf(RED "- dates: Allocation échouée\n" RESET);
-		if (!new_prix) printf(RED "- prix: Allocation échouée\n" RESET);
-		if (!new_quantite) printf(RED "- quantités: Allocation échouée\n" RESET);
-		if (!new_diff) printf(RED "- différences: Allocation échouée\n" RESET);
-		if (!new_percent) printf(RED "- pourcentages: Allocation échouée\n" RESET);
-		if (new_dates) free(new_dates);
-		if (new_prix) free(new_prix);
-		if (new_quantite) free(new_quantite);
-		if (new_diff) free(new_diff);
-		if (new_percent) free(new_percent);
-		return (0);
+		printf(RED "Erreur: Allocation échouée pour l'actif '%s'.\n" RESET, asset->nom);
+		free(new_dates);
+		free(new_prix);
+		free(new_quantite);
+		free(new_diff);
+		free(new_percent);
+		return 0;
 	}
+
 	asset->dates = new_dates;
 	asset->historique_prix = new_prix;
 	asset->historique_quantite = new_quantite;
 	asset->historique_diff_begin = new_diff;
 	asset->historique_percent_begin = new_percent;
 	asset->max_dates = new_size;
-	printf(GREEN "Redimensionnement réussi : nouvelles dimensions = %d.\n" RESET, new_size);
-	return (1);
+
+	return 1;
 }
+
 
 int resize_portfolio(t_portfolio *portfolio)
 {
@@ -217,17 +223,20 @@ int resize_transactions(t_portfolio *portfolio)
 
 void free_portfolio_manager(t_portfolio_manager *manager)
 {
-	int i = 0;
+	int i;
 
 	if (!manager)
 		return;
 
+	i = 0;
 	while (i < manager->portfolio_count)
 	{
 		free_portfolio(manager->portfolios[i]);
+		manager->portfolios[i] = NULL;
 		i++;
 	}
 
 	free(manager->portfolios);
+	manager->portfolios = NULL;
 	free(manager);
 }

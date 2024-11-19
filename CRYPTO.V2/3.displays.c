@@ -6,7 +6,7 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/17 05:30:15 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/18 18:57:18 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/11/19 03:21:49 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,12 +63,70 @@ void display_sales_history(t_point *asset)
 	print_centered("-------------------------------------------");
 }
 
-
 void display_portfolio(t_portfolio *portfolio)
 {
-	int i;
-	t_point *asset;
-	float dernier_prix, difference;
+	int		i;
+	t_point	*asset;
+	float	dernier_prix, pnl;
+	char	row[256], balance[64];
+
+	if (portfolio == NULL || portfolio->asset_count == 0)
+	{
+		print_centered(RED "Erreur : Aucun actif dans le portefeuille." RESET);
+		return;
+	}
+
+	// En-tête centré
+	print_centered("======= PORTFOLIO ACTUEL =======");
+	print_centered("   Nom           Prix Moyen     Quantité       Dernier Prix        PNL");
+	print_centered("===============================================================");
+
+	// Parcours des actifs
+	i = 0;
+	while (i < portfolio->asset_count)
+	{
+		asset = portfolio->assets[i];
+		if (asset != NULL && !asset->is_sold_out)
+		{
+			dernier_prix = asset->historique_prix[asset->date_count - 1];
+			pnl = (dernier_prix - asset->prix_moyen) * asset->historique_quantite[asset->date_count - 1];
+
+			// Formater la ligne de l'actif
+			snprintf(row, sizeof(row), "   %-13s %-15.5f %-15.5f %-18.5f",
+					 asset->nom,
+					 asset->prix_moyen,
+					 asset->historique_quantite[asset->date_count - 1],
+					 dernier_prix);
+
+			if (pnl >= 0)
+				snprintf(row + strlen(row), sizeof(row) - strlen(row),
+						 GREEN "+%.2f" RESET, pnl);
+			else
+				snprintf(row + strlen(row), sizeof(row) - strlen(row),
+						 RED "%.2f" RESET, pnl);
+
+			print_centered(row); // Affiche la ligne centrée
+		}
+		else
+		{
+			print_centered(YELLOW "Actif non valide." RESET);
+		}
+		i++;
+	}
+
+	// Pied de tableau
+	print_centered("---------------------------------------------------------------");
+	snprintf(balance, sizeof(balance), "Balance en dollars : " GREEN "%.2f $" RESET, portfolio->dollar_balance);
+	print_centered(balance);
+	print_centered("===============================================================");
+}
+
+
+/*void	display_portfolio(t_portfolio *portfolio)
+{
+	int		i;
+	t_point	*asset;
+	float	dernier_prix, pnl;
 
 	if (portfolio == NULL || portfolio->asset_count == 0)
 	{
@@ -77,7 +135,7 @@ void display_portfolio(t_portfolio *portfolio)
 	}
 
 	print_centered("======= PORTFOLIO ACTUEL =======");
-	print_centered("Nom            Prix Moyen    Quantité     Dernier Prix    Diff");
+	print_centered("Nom            Prix Moyen    Quantité     Dernier Prix    PNL");
 	print_centered("==============================================================");
 
 	i = 0;
@@ -87,7 +145,7 @@ void display_portfolio(t_portfolio *portfolio)
 		if (asset != NULL && !asset->is_sold_out)
 		{
 			dernier_prix = asset->historique_prix[asset->date_count - 1];
-			difference = dernier_prix - asset->prix_moyen;
+			pnl = (dernier_prix - asset->prix_moyen) * asset->historique_quantite[asset->date_count - 1];
 
 			char row[256];
 			snprintf(row, sizeof(row), "%-15s %-12.5f %-12.5f %-12.5f",
@@ -96,12 +154,12 @@ void display_portfolio(t_portfolio *portfolio)
 					 asset->historique_quantite[asset->date_count - 1],
 					 dernier_prix);
 
-			if (difference >= 0)
+			if (pnl >= 0)
 				snprintf(row + strlen(row), sizeof(row) - strlen(row),
-						 GREEN " +%.5f" RESET, difference);
+						 GREEN " +%.2f" RESET, pnl);
 			else
 				snprintf(row + strlen(row), sizeof(row) - strlen(row),
-						 RED " %.5f" RESET, difference);
+						 RED " %.2f" RESET, pnl);
 
 			print_centered(row);
 		}
@@ -117,8 +175,7 @@ void display_portfolio(t_portfolio *portfolio)
 	snprintf(balance, sizeof(balance), "Balance en dollars : " GREEN "%.2f $" RESET, portfolio->dollar_balance);
 	print_centered(balance);
 	print_centered("===========================================");
-}
-
+}*/
 
 
 void display_global_summary(t_portfolio *portfolio)

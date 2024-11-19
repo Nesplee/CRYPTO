@@ -6,7 +6,7 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/13 16:36:40 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/18 14:42:28 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/11/19 02:19:36 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,4 +164,21 @@ void print_centered(const char *text)
 void clear_stdin()
 {
 	while (getchar() != '\n' && !feof(stdin));
+}
+
+t_point *find_asset_by_name(t_portfolio *portfolio, char *nom)
+{
+	int i;
+
+	if (!portfolio || !nom)
+		return NULL;
+
+	i = 0;
+	while (i < portfolio->asset_count)
+	{
+		if (ft_strcmp(portfolio->assets[i]->nom, nom) == 0)
+			return portfolio->assets[i];
+		i++;
+	}
+	return NULL; // L'actif n'existe pas
 }

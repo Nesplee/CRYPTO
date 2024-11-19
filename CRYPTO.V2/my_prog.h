@@ -6,7 +6,7 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/14 15:48:19 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/18 23:36:45 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/11/19 02:55:02 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,6 +106,8 @@ void 				clear_screen(void);
 int 				get_terminal_width(void);
 void 				print_centered(const char *text);
 void 				clear_stdin();
+t_point *			find_asset_by_name(t_portfolio *portfolio, char *nom);
+
 //		FONCTIONS FREE & RESIZE
 
 void				free_asset(t_point *asset);

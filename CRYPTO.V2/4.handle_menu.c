@@ -6,7 +6,7 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 16:22:53 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/19 01:43:47 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/11/19 03:28:29 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,9 +69,172 @@ void	handle_add_asset(t_portfolio *portfolio)
 		printf(GREEN "Actif ajouté avec succès!\n" RESET);
 }
 
-
-
 void	handle_update_asset(t_portfolio *portfolio)
+{
+	char	nom[15];
+	char	date[12];
+	char	choix[3];
+	float	nouveau_prix;
+	float	nouvelle_quantite;
+	float	montant_dollars;
+	int		i = 0;
+	int		found = 0;
+
+	if (!portfolio || !portfolio->assets || portfolio->asset_count == 0)
+	{
+		printf(RED "Erreur : Aucun actif disponible pour la mise à jour.\n" RESET);
+		return;
+	}
+
+	printf("Nom de l'actif à mettre à jour : ");
+	if (!fgets(nom, sizeof(nom), stdin) || nom[0] == '\n')
+	{
+		printf(RED "Erreur: Lecture du nom échouée.\n" RESET);
+		return;
+	}
+	nom[strcspn(nom, "\n")] = '\0';
+
+	while (i < portfolio->asset_count)
+	{
+		if (!portfolio->assets[i] || !portfolio->assets[i]->nom)
+		{
+			i++;
+			continue;
+		}
+
+		if (ft_strcmp(portfolio->assets[i]->nom, nom) == 0)
+		{
+			found = 1;
+			printf("Souhaitez-vous réaliser un achat ? (O/N) : ");
+			if (!fgets(choix, sizeof(choix), stdin) || choix[0] == '\n')
+			{
+				printf(RED "Erreur: Lecture échouée.\n" RESET);
+				clear_stdin();
+				i++;
+				continue;
+			}
+			choix[strcspn(choix, "\n")] = '\0'; // Supprime le '\n'
+
+			if (choix[0] == 'O' || choix[0] == 'o')
+			{
+				printf("Nouveau prix : ");
+				if (scanf("%f", &nouveau_prix) != 1)
+				{
+					printf(RED "Erreur: Lecture du prix échouée.\n" RESET);
+					clear_stdin();
+					i++;
+					continue;
+				}
+				clear_stdin();
+
+				printf("Nouvelle quantité : ");
+				if (scanf("%f", &nouvelle_quantite) != 1)
+				{
+					printf(RED "Erreur: Lecture de la quantité échouée.\n" RESET);
+					clear_stdin();
+					i++;
+					continue;
+				}
+				clear_stdin();
+
+				printf("Nouvelle date (YYYY-MM-DD) : ");
+				if (!fgets(date, sizeof(date), stdin) || date[0] == '\n')
+				{
+					printf(RED "Erreur: Lecture de la date échouée.\n" RESET);
+					clear_stdin();
+					i++;
+					continue;
+				}
+				date[strcspn(date, "\n")] = '\0'; // Supprime le '\n'
+
+				while (!is_valid_date(date))
+				{
+					printf(RED "Erreur: Format de date invalide. Réessayez (YYYY-MM-DD) : ");
+					if (!fgets(date, sizeof(date), stdin) || date[0] == '\n')
+					{
+						printf(RED "Erreur: Lecture de la date échouée.\n" RESET);
+						clear_stdin();
+						i++;
+						continue;
+					}
+					date[strcspn(date, "\n")] = '\0'; // Supprime le '\n'
+				}
+
+				printf("Souhaitez-vous utiliser des dollars locaux ? (O/N) : ");
+				if (!fgets(choix, sizeof(choix), stdin) || choix[0] == '\n')
+				{
+					printf(RED "Erreur: Lecture échouée.\n" RESET);
+					clear_stdin();
+					i++;
+					continue;
+				}
+				choix[strcspn(choix, "\n")] = '\0'; // Supprime le '\n'
+
+				if (choix[0] == 'O' || choix[0] == 'o')
+				{
+					montant_dollars = nouveau_prix * nouvelle_quantite;
+					if (portfolio->dollar_balance < montant_dollars)
+					{
+						printf(RED "Erreur: Solde insuffisant en dollars locaux.\n" RESET);
+						return;
+					}
+					portfolio->dollar_balance -= montant_dollars;
+					printf(GREEN "Montant de %.2f $ utilisé. Nouveau solde : %.2f $\n" RESET,
+						   montant_dollars, portfolio->dollar_balance);
+				}
+
+				update_position(portfolio->assets[i], nouveau_prix, nouvelle_quantite, date);
+				printf(GREEN "Actif '%s' mis à jour avec un nouvel achat.\n" RESET, nom);
+			}
+			else
+			{
+				printf("Nouveau prix : ");
+				if (scanf("%f", &nouveau_prix) != 1)
+				{
+					printf(RED "Erreur: Lecture du prix échouée.\n" RESET);
+					clear_stdin();
+					i++;
+					continue;
+				}
+				clear_stdin();
+
+				printf("Date de modification (YYYY-MM-DD) : ");
+				if (!fgets(date, sizeof(date), stdin) || date[0] == '\n')
+				{
+					printf(RED "Erreur: Lecture de la date échouée.\n" RESET);
+					clear_stdin();
+					i++;
+					continue;
+				}
+				date[strcspn(date, "\n")] = '\0'; // Supprime le '\n'
+
+				while (!is_valid_date(date))
+				{
+					printf(RED "Erreur: Format de date invalide. Réessayez (YYYY-MM-DD) : ");
+					if (!fgets(date, sizeof(date), stdin) || date[0] == '\n')
+					{
+						printf(RED "Erreur: Lecture de la date échouée.\n" RESET);
+						clear_stdin();
+						i++;
+						continue;
+					}
+					date[strcspn(date, "\n")] = '\0'; // Supprime le '\n'
+				}
+
+				update_current_price(portfolio->assets[i], nouveau_prix, date);
+				printf(GREEN "Actif '%s' mis à jour avec un nouveau prix.\n" RESET, nom);
+			}
+		}
+		i++;
+	}
+
+	if (!found)
+		printf(RED "Erreur: Actif non trouvé.\n" RESET);
+	else
+		printf(GREEN "Modification de l'actif '%s' réussie.\n" RESET, nom);
+}
+
+/*void	handle_update_asset(t_portfolio *portfolio)
 {
 	char	nom[15];
 	char	date[12];
@@ -211,7 +374,7 @@ void	handle_update_asset(t_portfolio *portfolio)
 	else
 		printf(GREEN "Modification de l'actif %s réussie.\n" RESET, nom);
 	return ;
-}
+}*/
 
 /*void	handle_sell_asset(t_portfolio *portfolio)
 {

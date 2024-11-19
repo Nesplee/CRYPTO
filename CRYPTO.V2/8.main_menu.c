@@ -6,7 +6,7 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/17 18:35:39 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/19 00:59:46 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/11/19 02:57:46 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,7 +96,6 @@ void main_menu(t_portfolio_manager *manager)
 	}
 	save_all_portfolios(manager, "portfolios.txt");
 }
-
 
 void portfolio_menu(t_portfolio_manager *manager)
 {

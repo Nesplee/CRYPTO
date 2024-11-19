@@ -6,15 +6,15 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/14 16:14:49 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/19 01:41:18 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/11/19 03:28:17 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "my_prog.h"
 
-t_point	*create_asset(t_portfolio *portfolio, char *nom, char *date, float prix_achat, float quantite)
+t_point *create_asset(t_portfolio *portfolio, char *nom, char *date, float prix_achat, float quantite)
 {
-	t_point	*new_actif;
+	t_point *existing_actif;
 
 	if (!portfolio || !nom || !date)
 	{
@@ -26,6 +26,18 @@ t_point	*create_asset(t_portfolio *portfolio, char *nom, char *date, float prix_
 		printf(RED "Erreur:" RESET "Le prix d'achat doit être supérieur à 0.\n");
 		return (NULL);
 	}
+
+	// Recherche d'un actif existant avec le même nom
+	existing_actif = find_asset_by_name(portfolio, nom);
+	if (existing_actif)
+	{
+		// Mettre à jour la position de l'actif existant
+		printf(GREEN "Actif '%s' trouvé, mise à jour de la position.\n" RESET, nom);
+		update_position(existing_actif, prix_achat, quantite, date);
+		return existing_actif;
+	}
+
+	// Si l'actif n'existe pas, création d'un nouvel actif
 	if (portfolio->asset_count >= portfolio->max_assets)
 	{
 		if (!resize_portfolio(portfolio))
@@ -34,11 +46,12 @@ t_point	*create_asset(t_portfolio *portfolio, char *nom, char *date, float prix_
 			return NULL;
 		}
 	}
-	new_actif = (t_point *)malloc(sizeof(t_point));
-	if (new_actif == NULL)
+
+	t_point *new_actif = (t_point *)malloc(sizeof(t_point));
+	if (!new_actif)
 		return (NULL);
 	new_actif->nom = ft_strdup(nom);
-	if (new_actif->nom == NULL)
+	if (!new_actif->nom)
 	{
 		free(new_actif);
 		return (NULL);
@@ -55,12 +68,14 @@ t_point	*create_asset(t_portfolio *portfolio, char *nom, char *date, float prix_
 	new_actif->historique_diff_begin = (float *)malloc(sizeof(float) * new_actif->max_dates);
 	new_actif->historique_percent_begin = (float *)malloc(sizeof(float) * new_actif->max_dates);
 	new_actif->sales = (t_sale *)malloc(sizeof(t_sale) * new_actif->max_sales);
+
 	if (!new_actif->dates || !new_actif->historique_prix || !new_actif->historique_quantite ||
 		!new_actif->historique_diff_begin || !new_actif->historique_percent_begin || !new_actif->sales)
 	{
 		free_asset(new_actif);
 		return NULL;
 	}
+
 	new_actif->dates[0] = ft_strdup(date);
 	if (!new_actif->dates[0])
 	{
@@ -71,10 +86,12 @@ t_point	*create_asset(t_portfolio *portfolio, char *nom, char *date, float prix_
 	new_actif->historique_quantite[0] = quantite;
 	new_actif->historique_diff_begin[0] = 0;
 	new_actif->historique_percent_begin[0] = 0;
-	new_actif->date_count = 0;
+	new_actif->date_count = 1;
+
 	portfolio->assets[portfolio->asset_count++] = new_actif;
 	return (new_actif);
 }
+
 
 void	update_position(t_point *actif, float nouveau_prix, float nouvelle_quantite, char *nouvelle_date)
 {
@@ -185,9 +202,6 @@ void update_current_price(t_point *actif, float update_prix, char *date_suivi)
 
 	printf("Debug: Fin de update_current_price pour %s\n", actif->nom);
 }
-/*
-			FONCTIONS DE CALCULS - A COMPLETER -
-*/
 
 void	calculate_profit(t_point *asset, int start_index, int end_index)
 {
@@ -243,20 +257,17 @@ void	archive_sale(t_point *asset, t_portfolio *portfolio, float quantity, float 
 		printf(RED "Erreur:" RESET " Paramètres invalides pour la vente.\n");
 		return;
 	}
-	// Vérification stricte de la quantité disponible
 	if (quantity > asset->historique_quantite[asset->date_count - 1])
 	{
 		printf(RED "Erreur:" RESET " Quantité de vente supérieure à la quantité disponible.\n");
 		return;
 	}
-	// Redimensionnement des ventes si nécessaire
 	if (asset->sale_count >= asset->max_sales && !resize_sales(asset))
 	{
 		printf(RED "Erreur:" RESET " Impossible d'ajouter une nouvelle vente.\n");
 		return;
 	}
 
-	// Enregistrement de la vente
 	sale = &asset->sales[asset->sale_count];
 	sale->nom = ft_strdup(asset->nom);
 	sale->date = ft_strdup(sale_date);
@@ -266,7 +277,6 @@ void	archive_sale(t_point *asset, t_portfolio *portfolio, float quantity, float 
 		return;
 	}
 
-	// Calculs pour la vente
 	sale->quantite_vendue = quantity;
 	sale->prix_vente = sale_price;
 	sale->profit_loss_exit = (sale_price - asset->prix_moyen) * quantity;
@@ -275,7 +285,6 @@ void	archive_sale(t_point *asset, t_portfolio *portfolio, float quantity, float 
 	sale_value = quantity * sale_price;
 	portfolio->dollar_balance += sale_value;
 
-	// Mise à jour de la quantité
 	asset->historique_quantite[asset->date_count - 1] -= quantity;
 	if (asset->historique_quantite[asset->date_count - 1] <= 0)
 	{
@@ -283,56 +292,6 @@ void	archive_sale(t_point *asset, t_portfolio *portfolio, float quantity, float 
 		asset->is_sold_out = 1;
 	}
 
-	// Incrément du nombre de ventes
 	asset->sale_count++;
 	printf(GREEN "Vente enregistrée pour %s : %.2f unités à %.2f.\n" RESET, asset->nom, quantity, sale_price);
 }
-
-/*void	archive_sale(t_point *asset, t_portfolio *portfolio, float quantity, float sale_price, char *sale_date)
-{
-	t_sale	*sale;
-	float	sale_value;
-
-	if (!asset || !portfolio || !sale_date || quantity <= 0 || sale_price <= 0)
-	{
-		printf(RED "Erreur:" RESET " Paramètres invalides pour la vente.\n");
-		return;
-	}
-	if (quantity > asset->historique_quantite[asset->date_count - 1])
-	{
-		printf(RED "Erreur:" RESET " Quantité de vente supérieure à la quantité disponible.\n");
-		return;
-	}
-	if (asset->sale_count >= asset->max_sales && !resize_sales(asset))
-	{
-		printf(RED "Erreur:" RESET " Impossible d'ajouter une nouvelle vente.\n");
-		return;
-	}
-
-	sale = &asset->sales[asset->sale_count];
-	sale->nom = ft_strdup(asset->nom);
-	sale->date = ft_strdup(sale_date);
-	if (!sale->nom || !sale->date)
-	{
-		printf(RED "Erreur:" RESET " Allocation mémoire échouée.\n");
-		return;
-	}
-
-	sale->quantite_vendue = quantity;
-	sale->prix_vente = sale_price;
-	sale->profit_loss_exit = (sale_price - asset->prix_moyen) * quantity;
-	sale->percent_exit = asset->prix_moyen != 0 ? ((sale_price - asset->prix_moyen) / asset->prix_moyen) * 100 : 0;
-
-	sale_value = quantity * sale_price;
-	portfolio->dollar_balance += sale_value;
-
-	asset->historique_quantite[asset->date_count - 1] -= quantity;
-	if (asset->historique_quantite[asset->date_count - 1] <= 0)
-	{
-		asset->historique_quantite[asset->date_count - 1] = 0;
-		asset->is_sold_out = 1;
-	}
-
-	asset->sale_count++;
-	printf(GREEN "Vente enregistrée pour %s : %.2f unités à %.2f.\n" RESET, asset->nom, quantity, sale_price);
-}*/
