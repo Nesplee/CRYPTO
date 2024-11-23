@@ -6,7 +6,7 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:00:53 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/23 19:59:54 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/11/23 20:10:08 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,95 +135,95 @@ int save_portfolio(const t_portfolio *portfolio, const char *filename)
 
 int load_portfolio(const char *filename, t_portfolio *portfolio)
 {
-    FILE *file = fopen(filename, "r");
-    if (!file)
-    {
-        printf("Erreur: Impossible d'ouvrir le fichier %s\n", filename);
-        return 0;
-    }
+		FILE *file = fopen(filename, "r");
+		if (!file)
+		{
+			printf("Erreur: Impossible d'ouvrir le fichier %s\n", filename);
+			return 0;
+		}
 
-    char line[1024], buffer[256];
-    int assets_loaded = 0;
+		char line[1024], buffer[256];
+		int assets_loaded = 0;
 
-    printf("DEBUG: Début du chargement du portefeuille...\n");
+		printf("DEBUG: Début du chargement du portefeuille...\n");
 
-    // Charger d'abord les métadonnées globales
-    while (fgets(line, sizeof(line), file))
-    {
-        trim_whitespace(line);
+		// Charger d'abord les métadonnées globales
+		while (fgets(line, sizeof(line), file))
+		{
+			trim_whitespace(line);
 
-        if (sscanf(line, " \"name\": \"%[^\"]\",", buffer) == 1)
-        {
-            portfolio->name = strdup(buffer);
-            if (!portfolio->name)
-            {
-                printf("Erreur: Impossible d'allouer de la mémoire pour le nom du portefeuille.\n");
-                fclose(file);
-                return 0;
-            }
-            printf("DEBUG: Nom du portefeuille chargé : %s\n", portfolio->name);
-        }
-        else if (sscanf(line, " \"dollar_balance\": %f,", &portfolio->dollar_balance) == 1)
-        {
-            printf("DEBUG: Solde en dollars chargé : %.2f\n", portfolio->dollar_balance);
-        }
-        else if (sscanf(line, " \"total_profit_loss\": %f,", &portfolio->total_profit_loss) == 1)
-        {
-            printf("DEBUG: Total profit/perte chargé : %.2f\n", portfolio->total_profit_loss);
-        }
+			if (sscanf(line, " \"name\": \"%[^\"]\",", buffer) == 1)
+			{
+				portfolio->name = strdup(buffer);
+				if (!portfolio->name)
+				{
+					printf("Erreur: Impossible d'allouer de la mémoire pour le nom du portefeuille.\n");
+					fclose(file);
+					return 0;
+				}
+				printf("DEBUG: Nom du portefeuille chargé : %s\n", portfolio->name);
+			}
+			else if (sscanf(line, " \"dollar_balance\": %f,", &portfolio->dollar_balance) == 1)
+			{
+				printf("DEBUG: Solde en dollars chargé : %.2f\n", portfolio->dollar_balance);
+			}
+			else if (sscanf(line, " \"total_profit_loss\": %f,", &portfolio->total_profit_loss) == 1)
+			{
+				printf("DEBUG: Total profit/perte chargé : %.2f\n", portfolio->total_profit_loss);
+			}
 
-        if (strstr(line, "\"assets\": ["))
-        {
-            printf("DEBUG: Détection de la section 'assets'.\n");
-            assets_loaded = load_assets_history(file, portfolio);
-            if (!assets_loaded)
-            {
-                printf("Erreur: Échec du chargement des actifs.\n");
-                fclose(file);
-                return 0;
-            }
-            break; // Passer à la lecture des sections après les métadonnées
-        }
-    }
+			if (strstr(line, "\"assets\": ["))
+			{
+				printf("DEBUG: Détection de la section 'assets'.\n");
+				assets_loaded = load_assets_history(file, portfolio);
+				if (!assets_loaded)
+				{
+					printf("Erreur: Échec du chargement des actifs.\n");
+					fclose(file);
+					return 0;
+				}
+				break; // Passer à la lecture des sections après les métadonnées
+			}
+		}
 
-    // Charger les autres sections après "assets"
-    while (fgets(line, sizeof(line), file))
-    {
-        trim_whitespace(line);
+		// Charger les autres sections après "assets"
+		while (fgets(line, sizeof(line), file))
+		{
+			trim_whitespace(line);
 
-        if (strstr(line, "\"sales\": ["))
-        {
-            printf("DEBUG: Détection de la section 'sales'.\n");
+			if (strstr(line, "\"sales\": ["))
+			{
+				printf("DEBUG: Détection de la section 'sales'.\n");
 
-            // Pour chaque actif dans le portefeuille, charger son historique des ventes
-            for (int i = 0; i < portfolio->asset_count; i++)
-            {
-                t_asset *asset = portfolio->assets[i];
-                if (!load_sales_history(file, asset)) // Charger l'historique des ventes pour chaque actif
-                {
-                    printf("Erreur: Échec du chargement des ventes pour l'actif %s.\n", asset->nom);
-                    fclose(file);
-                    return 0;
-                }
-            }
-        }
-        else if (strstr(line, "\"transactions\": ["))
-        {
-            printf("DEBUG: Détection de la section 'transactions'.\n");
-            if (!load_transactions_history(file, portfolio))
-            {
-                printf("Erreur: Échec du chargement des transactions.\n");
-                fclose(file);
-                return 0;
-            }
-        }
-    }
+				// Pour chaque actif dans le portefeuille, charger son historique des ventes
+				for (int i = 0; i < portfolio->asset_count; i++)
+				{
+					t_asset *asset = portfolio->assets[i];
+					if (!load_sales_history(file, asset)) // Charger l'historique des ventes pour chaque actif
+					{
+						printf("Erreur: Échec du chargement des ventes pour l'actif %s.\n", asset->nom);
+						fclose(file);
+						return 0;
+					}
+				}
+			}
+			else if (strstr(line, "\"transactions\": ["))
+			{
+				printf("DEBUG: Détection de la section 'transactions'.\n");
+				if (!load_transactions_history(file, portfolio))
+				{
+					printf("Erreur: Échec du chargement des transactions.\n");
+					fclose(file);
+					return 0;
+				}
+			}
+		}
 
-    fclose(file);
+		fclose(file);
 
-    // Résumé final
-    printf("DEBUG: Portefeuille chargé avec succès depuis le fichier %s\n", filename);
-    printf("DEBUG: Total d'actifs chargés : %d\n", portfolio->asset_count);
-    return 1;
+		// Résumé final
+		printf("DEBUG: Portefeuille chargé avec succès depuis le fichier %s\n", filename);
+		printf("DEBUG: Total d'actifs chargés : %d\n", portfolio->asset_count);
+		return 1;
 }
 

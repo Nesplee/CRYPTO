@@ -6,7 +6,7 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/21 03:01:52 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/23 19:55:26 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/11/23 20:31:05 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -239,115 +239,167 @@ int load_sales_history(FILE *file, t_asset *asset)
         return 0;
     }
 
-    char date[11];
+    char line[1024], date[11];
     float quantite_vendue, prix_vente, percent_exit;
-    while (fscanf(file, "%10s %f %f %f", date, &quantite_vendue, &prix_vente, &percent_exit) == 4)
-    {
-        // Vérification de la capacité de l'historique des ventes
-        if (asset->sale_count >= asset->max_sales)
-        {
-            if (!resize_sales(asset))
-            {
-                printf(RED "Erreur: Impossible de redimensionner les ventes pour l'actif %s.\n", asset->nom);
-                return 0;
-            }
-        }
 
-        // Ajouter la vente à l'historique
-        asset->sales[asset->sale_count].nom = strdup(date);  // Stockage de la date de la vente
-        if (!asset->sales[asset->sale_count].nom)
+    // Si l'array sales est nul, il faut l'allouer
+    if (asset->sales == NULL)
+    {
+        asset->max_sales = 10;  // Taille initiale
+        asset->sales = malloc(asset->max_sales * sizeof(t_sale));
+        if (!asset->sales)
         {
-            printf(RED "Erreur: Allocation mémoire échouée pour le nom de la vente.\n" RESET);
+            printf(RED "Erreur: Allocation mémoire pour les ventes échouée.\n" RESET);
             return 0;
         }
+        asset->sale_count = 0;
+    }
 
-        asset->sales[asset->sale_count].quantite_vendue = quantite_vendue;
-        asset->sales[asset->sale_count].prix_vente = prix_vente;
-        asset->sales[asset->sale_count].percent_exit = percent_exit;
-        asset->sales[asset->sale_count].profit_loss_exit = quantite_vendue * prix_vente * (percent_exit / 100.0);
+    // Boucle pour lire chaque vente dans le fichier
+    while (fgets(line, sizeof(line), file))
+    {
+        trim_whitespace(line);
 
-        asset->sale_count++;
+        if (strstr(line, "]")) // Fin de la section "sales"
+        {
+            printf("DEBUG: Fin de la section 'sales' détectée.\n");
+            break;
+        }
+
+        if (strstr(line, "{")) // Début d'une vente
+        {
+            if (asset->sale_count >= asset->max_sales)  // Si nous n'avons plus de place pour les ventes
+            {
+                // Redimensionner le tableau de ventes
+                if (!resize_sales(asset))
+                {
+                    printf(RED "Erreur: Impossible de redimensionner les ventes.\n" RESET);
+                    return 0;
+                }
+            }
+
+            t_sale *sale = &asset->sales[asset->sale_count];
+            memset(sale, 0, sizeof(t_sale));  // Initialiser la vente
+
+            while (fgets(line, sizeof(line), file) && !strstr(line, "}"))
+            {
+                trim_whitespace(line);
+                if (sscanf(line, " \"date\": \"%[^\"]\",", date) == 1)
+                {
+                    sale->nom = strdup(date);  // Stocker la date de la vente
+                    printf("DEBUG: Date de la vente : %s\n", sale->nom);
+                }
+                else if (sscanf(line, " \"quantite_vendue\": %f,", &quantite_vendue) == 1)
+                {
+                    sale->quantite_vendue = quantite_vendue;  // Stocker la quantité vendue
+                    printf("DEBUG: Quantité vendue : %.2f\n", sale->quantite_vendue);
+                }
+                else if (sscanf(line, " \"prix_vente\": %f,", &prix_vente) == 1)
+                {
+                    sale->prix_vente = prix_vente;  // Stocker le prix de vente
+                    printf("DEBUG: Prix de vente : %.2f\n", sale->prix_vente);
+                }
+                else if (sscanf(line, " \"percent_exit\": %f,", &percent_exit) == 1)
+                {
+                    sale->percent_exit = percent_exit;  // Stocker le pourcentage de gain/perte
+                    printf("DEBUG: Pourcentage de gain/perte : %.2f\n", sale->percent_exit);
+                }
+                else if (sscanf(line, " \"profit_loss_exit\": %f,", &sale->profit_loss_exit) == 1)
+                {
+                    printf("DEBUG: Bénéfice/Perte sur la vente : %.2f\n", sale->profit_loss_exit);
+                }
+            }
+
+            // Calcul du profit/perte si ce n'est pas déjà fait
+            if (sale->profit_loss_exit == 0)
+            {
+                sale->profit_loss_exit = sale->quantite_vendue * sale->prix_vente * (sale->percent_exit / 100.0);
+            }
+
+            asset->sale_count++;
+        }
     }
 
     return 1;
 }
 
 
+
 int load_transactions_history(FILE *file, t_portfolio *portfolio)
 {
-    char line[1024], buffer[256];
-    int transaction_index = 0;
+		char line[1024], buffer[256];
+		int transaction_index = 0;
 
-    printf("DEBUG: Début du chargement des transactions...\n");
+		printf("DEBUG: Début du chargement des transactions...\n");
 
-    // Vérifier si portfolio->transactions est NULL et l'allouer si nécessaire
-    if (portfolio->transactions == NULL)
-    {
-        portfolio->max_transactions = 10;  // Taille initiale du tableau
-        portfolio->transactions = malloc(portfolio->max_transactions * sizeof(t_transaction));
-        if (!portfolio->transactions)
-        {
-            printf("Erreur: Impossible d'allouer de la mémoire pour les transactions.\n");
-            return 0;
-        }
-        printf("DEBUG: Allocation initiale réussie pour les transactions.\n");
-    }
+		// Vérifier si portfolio->transactions est NULL et l'allouer si nécessaire
+		if (portfolio->transactions == NULL)
+		{
+			portfolio->max_transactions = 10;  // Taille initiale du tableau
+			portfolio->transactions = malloc(portfolio->max_transactions * sizeof(t_transaction));
+			if (!portfolio->transactions)
+			{
+				printf("Erreur: Impossible d'allouer de la mémoire pour les transactions.\n");
+				return 0;
+			}
+			printf("DEBUG: Allocation initiale réussie pour les transactions.\n");
+		}
 
-    // Lire le fichier ligne par ligne
-    while (fgets(line, sizeof(line), file))
-    {
-        trim_whitespace(line);
+		// Lire le fichier ligne par ligne
+		while (fgets(line, sizeof(line), file))
+		{
+			trim_whitespace(line);
 
-        // Si on arrive à la fin de la section transactions
-        if (strstr(line, "]"))
-        {
-            printf("DEBUG: Fin de la section 'transactions' détectée.\n");
-            break;
-        }
+			// Si on arrive à la fin de la section transactions
+			if (strstr(line, "]"))
+			{
+				printf("DEBUG: Fin de la section 'transactions' détectée.\n");
+				break;
+			}
 
-        if (strstr(line, "{")) // Début d'une transaction
-        {
-            t_transaction transaction;
-            memset(&transaction, 0, sizeof(t_transaction));  // S'assurer que la transaction est bien initialisée
+			if (strstr(line, "{")) // Début d'une transaction
+			{
+				t_transaction transaction;
+				memset(&transaction, 0, sizeof(t_transaction));  // S'assurer que la transaction est bien initialisée
 
-            // Lire les propriétés de la transaction
-            while (fgets(line, sizeof(line), file) && !strstr(line, "}"))
-            {
-                trim_whitespace(line);
-                if (sscanf(line, " \"date\": \"%[^\"]\",", buffer) == 1)
-                {
-                    transaction.date = strdup(buffer);  // S'assurer qu'on a bien alloué la mémoire pour la date
-                    printf("DEBUG: Date de la transaction : %s\n", transaction.date);
-                }
-                else if (sscanf(line, " \"amount\": %f,", &transaction.amount) == 1)
-                {
-                    printf("DEBUG: Montant de la transaction : %.2f\n", transaction.amount);
-                }
-            }
+				// Lire les propriétés de la transaction
+				while (fgets(line, sizeof(line), file) && !strstr(line, "}"))
+				{
+					trim_whitespace(line);
+					if (sscanf(line, " \"date\": \"%[^\"]\",", buffer) == 1)
+					{
+						transaction.date = strdup(buffer);  // S'assurer qu'on a bien alloué la mémoire pour la date
+						printf("DEBUG: Date de la transaction : %s\n", transaction.date);
+					}
+					else if (sscanf(line, " \"amount\": %f,", &transaction.amount) == 1)
+					{
+						printf("DEBUG: Montant de la transaction : %.2f\n", transaction.amount);
+					}
+				}
 
-            // Vérifier que nous avons assez de place pour ajouter une transaction
-            if (portfolio->transaction_count >= portfolio->max_transactions)
-            {
-                portfolio->max_transactions *= 2; // Doubler la capacité
-                t_transaction *new_transactions = realloc(portfolio->transactions, portfolio->max_transactions * sizeof(t_transaction));
-                if (!new_transactions)
-                {
-                    printf("Erreur: Redimensionnement du tableau des transactions échoué.\n");
-                    return 0;
-                }
-                portfolio->transactions = new_transactions;
-                printf("DEBUG: Redimensionnement du tableau des transactions réussi, nouvelle taille : %d\n", portfolio->max_transactions);
-            }
+				// Vérifier que nous avons assez de place pour ajouter une transaction
+				if (portfolio->transaction_count >= portfolio->max_transactions)
+				{
+					portfolio->max_transactions *= 2; // Doubler la capacité
+					t_transaction *new_transactions = realloc(portfolio->transactions, portfolio->max_transactions * sizeof(t_transaction));
+					if (!new_transactions)
+					{
+						printf("Erreur: Redimensionnement du tableau des transactions échoué.\n");
+						return 0;
+					}
+					portfolio->transactions = new_transactions;
+					printf("DEBUG: Redimensionnement du tableau des transactions réussi, nouvelle taille : %d\n", portfolio->max_transactions);
+				}
 
-            // Ajouter la transaction au tableau
-            portfolio->transactions[portfolio->transaction_count++] = transaction;
-            transaction_index++;
-        }
-    }
+				// Ajouter la transaction au tableau
+				portfolio->transactions[portfolio->transaction_count++] = transaction;
+				transaction_index++;
+			}
+		}
 
-    // Vérification du nombre total de transactions chargées
-    printf("DEBUG: Nombre total de transactions chargées : %d\n", transaction_index);
-    return 1;
+		// Vérification du nombre total de transactions chargées
+		printf("DEBUG: Nombre total de transactions chargées : %d\n", transaction_index);
+		return 1;
 }
 
 

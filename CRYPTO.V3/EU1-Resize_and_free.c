@@ -6,7 +6,7 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:11:34 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/23 19:43:55 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/11/23 20:31:58 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -212,28 +212,21 @@ int resize_portfolio(t_portfolio *portfolio)
 
 int resize_sales(t_asset *asset)
 {
-    int new_size;
-    t_sale *new_sales;
-
-    if (!asset)
-    {
-        printf(RED "Erreur: Actif non défini.\n" RESET);
-        return 0;
-    }
-
-    new_size = asset->max_sales * 2;
-    new_sales = (t_sale *)realloc(asset->sales, sizeof(t_sale) * new_size);
+    int new_size = asset->max_sales * 2;
+    t_sale *new_sales = realloc(asset->sales, new_size * sizeof(t_sale));
     if (!new_sales)
     {
-        printf(RED "Erreur: Échec de l'allocation mémoire pour les ventes.\n" RESET);
+        printf(RED "Erreur: Impossible de redimensionner les ventes.\n" RESET);
         return 0;
     }
 
     asset->sales = new_sales;
     asset->max_sales = new_size;
+    printf("DEBUG: Redimensionnement du tableau des ventes réussi.\n");
 
     return 1;
 }
+
 
 int resize_history(t_asset *asset)
 {
