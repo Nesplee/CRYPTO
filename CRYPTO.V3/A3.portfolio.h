@@ -6,7 +6,7 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 14:34:39 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/23 15:30:24 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/11/24 03:36:14 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,6 +96,7 @@ void 				display_assets(t_portfolio *portfolio);
 void				display_portfolio(t_portfolio *portfolio);
 void 				display_global_summary(t_portfolio *portfolio);
 void				display_transactions(t_portfolio *portfolio);
+void 				display_all_sales(t_portfolio *portfolio);
 
 void 				update_position(t_asset *asset, float nouveau_prix, float nouvelle_quantite, char *nouvelle_date);
 void				 update_current_price(t_asset *asset, float update_prix, char *date_suivi);

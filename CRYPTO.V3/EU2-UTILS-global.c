@@ -6,7 +6,7 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:00:36 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/24 03:17:02 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/11/24 04:44:45 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,8 +104,11 @@ int is_only_spaces(const char *str)
 int is_valid_date(const char *date)
 {
 	int i = 0;
+	int year = 0, month = 0, day = 0;
+	int is_leap = 0;
 
-	if (ft_strlen((char *)date) != 10)
+	// Vérifier la longueur exacte et le format général [YYYY-MM-DD]
+	if (!date || ft_strlen((char *)date) != 10)
 		return (0);
 
 	while (date[i])
@@ -119,8 +122,58 @@ int is_valid_date(const char *date)
 			return (0);
 		i++;
 	}
+
+	// Extraire les valeurs numériques de l'année, du mois et du jour
+	sscanf(date, "%d-%d-%d", &year, &month, &day);
+
+	// Vérifier la validité du mois (1-12)
+	if (month < 1 || month > 12)
+		return (0);
+
+	// Vérifier la validité du jour (1-31)
+	if (day < 1 || day > 31)
+		return (0);
+
+	// Vérifier les jours en fonction du mois
+	if (month == 4 || month == 6 || month == 9 || month == 11) // Avril, Juin, Septembre, Novembre
+	{
+		if (day > 30)
+			return (0);
+	}
+
+	// Vérifier pour février (bissextile ou non)
+	if (month == 2)
+	{
+		if (year % 4 == 0)
+		{
+			if (year % 100 == 0)
+			{
+				if (year % 400 == 0)
+					is_leap = 1; // Année divisible par 400 -> bissextile
+				else
+					is_leap = 0; // Année divisible par 100 mais pas par 400 -> pas bissextile
+			}
+			else
+			{
+				is_leap = 1; // Année divisible par 4 mais pas par 100 -> bissextile
+			}
+		}
+		else
+		{
+			is_leap = 0; // Année non divisible par 4 -> pas bissextile
+		}
+
+		// Vérification du nombre de jours en février
+		if (is_leap == 1 && day > 29)
+			return (0);
+		if (is_leap == 0 && day > 28)
+			return (0);
+	}
+
+	// Si toutes les vérifications passent, la date est valide
 	return (1);
 }
+
 
 int	ft_strcmp(char *s1, char *s2)
 {
@@ -209,14 +262,23 @@ void print_centered(const char *text, const char *color)
 	else
 	{
 		// Calculer le nombre d'espaces nécessaires pour centrer
-		int text_length = stripped_strlen(text);
+		int text_length = stripped_strlen(text ? text : ""); // Éviter null
 		padding = (w.ws_col - text_length) / 2;
 		if (padding < 0) padding = 0;
 	}
 
 	// Imprimer les espaces puis le texte coloré
-	printf("%*s%s%s%s\n", padding, "", color, text, RESET);
+	if (text)
+	{
+		printf("%*s%s%s%s\n", padding, "", color ? color : "", text, RESET);
+	}
+	else
+	{
+		// Imprimer une ligne vide si le texte est nul
+		printf("\n");
+	}
 }
+
 
 void clear_stdin()
 {
@@ -324,4 +386,40 @@ void strip_colors(const char *input, char *output, size_t max_len)
 	}
 
 	output[j] = '\0';
+}
+
+
+//			DATEEEEEESSSS
+
+// Comparateur pour les dates
+int compare_dates(const char *date1, const char *date2)
+{
+	// Les dates sont au format [YYYY-MM-DD], donc une simple comparaison lexicographique suffit
+	return strcmp(date1, date2);
+}
+
+// Fonction de tri par date
+void sort_by_date(t_sale *sales, int count)
+{
+	int i, j;
+
+	if (!sales || count <= 1)
+		return;
+
+	t_sale temp;
+
+	for (i = 0; i < count - 1; i++)
+	{
+		for (j = 0; j < count - i - 1; j++)
+		{
+			// Comparer les dates et échanger si nécessaire
+			if (compare_dates(sales[j].date, sales[j + 1].date) > 0)
+			{
+				// Échanger les ventes
+				temp = sales[j];
+				sales[j] = sales[j + 1];
+				sales[j + 1] = temp;
+			}
+		}
+	}
 }

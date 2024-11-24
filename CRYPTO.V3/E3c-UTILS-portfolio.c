@@ -6,7 +6,7 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/21 01:33:20 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/24 02:31:44 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/11/24 04:30:12 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,11 +30,11 @@ void display_portfolio(t_portfolio *portfolio)
 	print_centered("======= LISTE DES ACTIFS =======", GRAY);
 
 	// En-tête de tableau centré
-	snprintf(row, sizeof(row), "%-15s%-15s%-15s%-15s%-15s%-15s",
+	snprintf(row, sizeof(row), "%-20s%-15s%-15s%-15s%-15s%-10s",
 			 "Date", "Nom", "Prix Moyen", "Quantité", "Dernier Prix", "PNL");
 	print_centered(row, GRAY);
 
-	print_centered("--------------------------------------------------------------------------------------------", GRAY);
+	print_centered("-------------------------------------------------------------------------------------------", GRAY);
 
 	i = 0;
 	while (i < portfolio->asset_count)
@@ -46,14 +46,21 @@ void display_portfolio(t_portfolio *portfolio)
 			pnl = (last_price - portfolio->assets[i]->prix_moyen) *
 				  portfolio->assets[i]->historique[portfolio->assets[i]->historique_count - 1].quantite;
 
+			// Chaîne temporaire pour la date avec crochets et couleurs
+			char formatted_date[64];
+			snprintf(formatted_date, sizeof(formatted_date),
+					 YELLOW "[%-10s]" RESET,
+					 portfolio->assets[i]->historique[portfolio->assets[i]->historique_count - 1].date);
+
 			// Construire la ligne de l'actif avec les couleurs appropriées
-			snprintf(row, sizeof(row),
-					 YELLOW "[%s]" RESET " " BLUE "%-15s" RESET LIGHT_BLUE "%-15.5f" RESET YELLOW "%-15.5f" RESET LIGHT_BLUE "%-15.5f" RESET,
-					 portfolio->assets[i]->historique[portfolio->assets[i]->historique_count - 1].date,
-					 portfolio->assets[i]->nom,
-					 portfolio->assets[i]->prix_moyen,
-					 portfolio->assets[i]->historique[portfolio->assets[i]->historique_count - 1].quantite,
-					 last_price);
+			// Construire la ligne de l'actif avec les couleurs appropriées
+		snprintf(row, sizeof(row),
+		 YELLOW "%-25s" RESET BLUE "%-15s" RESET LIGHT_BLUE "%-15.5f" RESET YELLOW "%-15.5f" RESET LIGHT_BLUE "%-15.5f" RESET,
+         formatted_date,  // Chaîne avec crochets et alignement
+         portfolio->assets[i]->nom,
+         portfolio->assets[i]->prix_moyen,
+         portfolio->assets[i]->historique[portfolio->assets[i]->historique_count - 1].quantite,
+         last_price);
 
 			// Ajouter le PNL avec couleur (vert pour bénéfices, rouge pour pertes)
 			if (pnl >= 0)
@@ -160,4 +167,53 @@ int is_valid_portfolio_name(const char *name)
 	}
 
 	return 1; // Nom valide
+}
+
+void display_all_sales(t_portfolio *portfolio)
+{
+	int i, j;
+	char row[256];
+
+	if (!portfolio || portfolio->asset_count == 0)
+	{
+		print_centered("Erreur : Aucun actif ou portefeuille non défini.", RED);
+		return;
+	}
+
+	print_centered("======= HISTORIQUE DE TOUTES LES VENTES =======", GRAY);
+	print_centered("[Date]         Nom            Prix de vente     Quantité       PNL", GRAY);
+	print_centered("--------------------------------------------------------------------", GRAY);
+
+	// Parcourir chaque actif du portefeuille
+	for (i = 0; i < portfolio->asset_count; i++)
+	{
+		t_asset *asset = portfolio->assets[i];
+		if (asset && asset->sale_count > 0)
+		{
+			// Parcourir chaque vente de l'actif
+			for (j = 0; j < asset->sale_count; j++)
+			{
+				t_sale sale = asset->sales[j];
+
+				// Construire une ligne de vente avec les couleurs
+				snprintf(row, sizeof(row),
+					YELLOW "[%s]" RESET " " BLUE "%-15s" RESET LIGHT_BLUE "%-15.2f" RESET YELLOW "%-15.2f" RESET,
+					sale.date,
+					asset->nom,
+					sale.prix_vente,
+					sale.quantite_vendue);
+
+				// Ajouter le PNL avec couleur (vert pour bénéfices, rouge pour pertes)
+				if (sale.profit_loss_exit >= 0)
+					snprintf(row + strlen(row), sizeof(row) - strlen(row), GREEN " +%.2f" RESET, sale.profit_loss_exit);
+				else
+					snprintf(row + strlen(row), sizeof(row) - strlen(row), RED " %.2f" RESET, sale.profit_loss_exit);
+
+				// Afficher la ligne centrée
+				print_centered(row, NULL);
+			}
+		}
+	}
+
+	print_centered("===============================================", GRAY);
 }

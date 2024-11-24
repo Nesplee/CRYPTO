@@ -6,7 +6,7 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/21 00:35:15 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/22 02:13:51 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/11/24 04:41:28 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ int input_date(char *date, size_t size)
 	while (1) // Boucle infinie pour permettre plusieurs tentatives
 	{
 		// Demander à l'utilisateur d'entrer une date
-		print_centered("Veuillez entrer une date au format YYYY-MM-DD :", LIGHT_BLUE);
+		print_centered("Veuillez entrer une date au format [YYYY-MM-DD] :", LIGHT_BLUE);
 
 		if (!fgets(date, size, stdin)) // Lecture sécurisée
 		{
@@ -100,21 +100,66 @@ int input_date(char *date, size_t size)
 		date[strcspn(date, "\n")] = '\0';
 		trim_whitespace(date);
 
-		// Vérifier si la date est valide
-		if (!is_valid_date(date))
+		// Validation des paramètres et affichage des erreurs spécifiques
+		if (ft_strlen(date) != 10 || date[4] != '-' || date[7] != '-')
 		{
-			print_centered("Erreur : Format de date invalide (YYYY-MM-DD attendu). Veuillez réessayer.", RED);
-			continue; // Redemander une date si le format est invalide
+			print_centered("Erreur : Format attendu [YYYY-MM-DD].", RED);
+			continue;
 		}
 
-		// Affichage de la date capturée (debug)
-		char debug_message[100];
-		snprintf(debug_message, sizeof(debug_message), "Date capturée : '%s'", date);
-		print_centered(debug_message, GRAY);
+		int year, month, day;
+		sscanf(date, "%4d-%2d-%2d", &year, &month, &day);
 
-		return 1; // Si la date est valide, sortir de la boucle et retourner 1
+		// Vérifier l'année
+		if (year < 1)
+		{
+			print_centered("Erreur : L'année doit être valide.", RED);
+			continue;
+		}
+
+		// Vérifier le mois
+		if (month < 1 || month > 12)
+		{
+			print_centered("Erreur : Le mois doit être compris entre 1 et 12.", RED);
+			continue;
+		}
+
+		// Vérifier les jours dans chaque mois
+		int max_days = 31;
+		if (month == 4 || month == 6 || month == 9 || month == 11) // Mois avec 30 jours
+		{
+			max_days = 30;
+		}
+		else if (month == 2) // Février
+		{
+			if ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0))
+			{
+				max_days = 29; // Année bissextile
+			}
+			else
+			{
+				max_days = 28; // Année non bissextile
+			}
+		}
+
+		// Valider le jour
+		if (day < 1 || day > max_days)
+		{
+			char error_message[100];
+			snprintf(error_message, sizeof(error_message),
+					 "Erreur : Ce mois contient seulement %d jours.", max_days);
+			print_centered(error_message, RED);
+			continue;
+		}
+
+		// Si tout est valide
+		char success_message[100];
+		snprintf(success_message, sizeof(success_message), "Date capturée : '%s'", date);
+		print_centered(success_message, GREEN);
+		return 1; // Date valide
 	}
 }
+
 
 
 
