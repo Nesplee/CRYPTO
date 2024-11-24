@@ -6,7 +6,7 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/21 00:35:15 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/24 04:41:28 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/11/24 17:09:28 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ float input_amount()
 
 	// Afficher le montant capturé (debug)
 	char debug_message[100];
-	snprintf(debug_message, sizeof(debug_message), "Montant capturé : %.2f", amount);
+	snprintf(debug_message, sizeof(debug_message), "Montant capturé : %.5f", amount);
 	print_centered(debug_message, GRAY);
 
 	return amount;

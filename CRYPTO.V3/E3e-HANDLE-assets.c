@@ -6,7 +6,7 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/21 02:01:33 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/24 02:51:39 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/11/24 17:52:08 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,80 +16,91 @@
 
 void handle_display_last_purchases(t_portfolio_manager *manager)
 {
-	int total_count = 0;
-	int i = 0;
-	int j;
-	int k;
-
 	print_centered("===== LES 10 DERNIERS ACHATS =====", GRAY);
 
-	while (i < manager->portfolio_count && total_count < 10)
+	int total_count = 0;
+
+	// Combiner et trier tous les mouvements
+	t_movement *movements = combine_and_sort_date(manager->portfolios[0], &total_count);
+
+	if (!movements || total_count == 0)
 	{
-		t_portfolio *portfolio = manager->portfolios[i];
-		j = 0;
-		while (j < portfolio->asset_count && total_count < 10)
-		{
-			t_asset *asset = portfolio->assets[j];
-			k = asset->historique_count - 1;
-			while (k >= 0 && total_count < 10)
-			{
-				printf("%-15s%-15.2f%-15.2f\n",
-					   asset->historique[k].date,
-					   asset->historique[k].quantite,
-					   asset->historique[k].prix);
-				k--;
-				total_count++;
-			}
-			j++;
-		}
-		i++;
+		print_centered("Aucun achat trouvé.", RED);
+		print_centered("===========================================", GRAY);
+		free_movements(movements, total_count);
+		return;
 	}
 
-	if (total_count == 0)
+	// Parcourir les mouvements du plus récent au plus ancien
+	int displayed_count = 0;
+	for (int i = total_count - 1; i >= 0 && displayed_count < 10; i--)
+	{
+		// Filtrer uniquement les achats/updates
+		if (strcmp(movements[i].type, "Achat/Update") == 0)
+		{
+			printf(YELLOW "[%-10s]" RESET " " BLUE "%-15s" RESET YELLOW "%-15.2f" RESET LIGHT_BLUE "%-15.2f" RESET "\n",
+				   movements[i].date,
+				   movements[i].nom,
+				   movements[i].amount,
+				   movements[i].price);
+			displayed_count++;
+		}
+	}
+
+	if (displayed_count == 0)
 	{
 		print_centered("Aucun achat trouvé.", RED);
 	}
 
 	print_centered("===========================================", GRAY);
+
+	free_movements(movements, total_count);
 }
 
 void handle_display_last_sales(t_portfolio_manager *manager)
 {
-	int total_count = 0;
-	int i = 0;
-	int j;
-	int k;
-
 	print_centered("===== LES 10 DERNIÈRES VENTES =====", GRAY);
 
-	while (i < manager->portfolio_count && total_count < 10)
+	int total_count = 0;
+
+	// Combiner et trier tous les mouvements
+	t_movement *movements = combine_and_sort_date(manager->portfolios[0], &total_count);
+
+	if (!movements || total_count == 0)
 	{
-		t_portfolio *portfolio = manager->portfolios[i];
-		j = 0;
-		while (j < portfolio->asset_count && total_count < 10)
-		{
-			t_asset *asset = portfolio->assets[j];
-			k = asset->sale_count - 1;
-			while (k >= 0 && total_count < 10)
-			{
-				t_sale sale = asset->sales[k];
-				printf("%-15s%-15.2f%-15.2f\n", sale.date,
-					   sale.quantite_vendue, sale.prix_vente);
-				k--;
-				total_count++;
-			}
-			j++;
-		}
-		i++;
+		print_centered("Aucune vente trouvée.", RED);
+		print_centered("===========================================", GRAY);
+		free_movements(movements, total_count);
+		return;
 	}
 
-	if (total_count == 0)
+	// Parcourir les mouvements du plus récent au plus ancien
+	int displayed_count = 0;
+	for (int i = total_count - 1; i >= 0 && displayed_count < 10; i--)
+	{
+		// Filtrer uniquement les ventes
+		if (strcmp(movements[i].type, "Vente") == 0)
+		{
+			printf(YELLOW "[%-10s]" RESET " " BLUE "%-15s" RESET YELLOW "%-15.2f" RESET LIGHT_BLUE "%-15.2f" RESET "\n",
+				   movements[i].date,
+				   movements[i].nom,
+				   movements[i].amount,
+				   movements[i].price);
+			displayed_count++;
+		}
+	}
+
+	if (displayed_count == 0)
 	{
 		print_centered("Aucune vente trouvée.", RED);
 	}
 
 	print_centered("===========================================", GRAY);
+
+	free_movements(movements, total_count);
 }
+
+
 
 void handle_display_asset_transactions(t_portfolio_manager *manager)
 {
@@ -349,7 +360,7 @@ void handle_update_asset(t_portfolio *portfolio)
 void handle_sell_asset(t_portfolio *portfolio)
 {
 	char nom[15], date[12];
-	float quantite, prix;
+	float quantite, prix, montant_vente;
 	t_asset *asset;
 
 	// Vérification de la validité du portefeuille
@@ -383,7 +394,7 @@ void handle_sell_asset(t_portfolio *portfolio)
 	{
 		char error_message[100];
 		snprintf(error_message, sizeof(error_message),
-				 "Erreur: Quantité demandée (%.2f) dépasse la quantité disponible (%.2f).",
+				 "Erreur: Quantité demandée (%.5f) dépasse la quantité disponible (%.5f).",
 				 quantite, asset->historique[asset->historique_count - 1].quantite);
 		print_centered(error_message, RED);
 		return;
@@ -396,10 +407,13 @@ void handle_sell_asset(t_portfolio *portfolio)
 	// Saisie de la date de vente
 	input_date(date, sizeof(date));
 
+	// Calcul du montant total de la vente
+	montant_vente = quantite * prix;
+
 	// Demander confirmation avant de vendre
 	char confirm_message[200];
 	snprintf(confirm_message, sizeof(confirm_message),
-			 GRAY "Confirmer la vente de %.2f unités de '%s' au prix de %.2f le %s ? (O/N) : " RESET,
+			 GRAY "Confirmer la vente de %.5f unités de '%s' au prix de %.5f le %s ? (O/N) : " RESET,
 			 quantite, nom, prix, date);
 	if (!ask_confirmation(confirm_message))
 	{
@@ -413,12 +427,24 @@ void handle_sell_asset(t_portfolio *portfolio)
 	// Libération des actifs vendus
 	free_sold_assets(portfolio);
 
+	// Demander à l'utilisateur s'il veut ajouter le montant de la vente au solde en dollars
+	char add_to_balance_message[200];
+	snprintf(add_to_balance_message, sizeof(add_to_balance_message),
+			 GRAY "Souhaitez-vous ajouter le montant de %.2f $ à votre solde en dollars ? (O/N) : " RESET,
+			 montant_vente);
+	if (ask_confirmation(add_to_balance_message))
+	{
+		// Appeler la fonction handle_add_dollars pour ajouter le montant
+		handle_add_dollars(portfolio, montant_vente, date);
+	}
+
 	// Affichage du message de succès
 	char success_message[150];
 	snprintf(success_message, sizeof(success_message),
-			 "Actif '%s' vendu avec succès. Quantité : %.2f, Prix : %.2f.", nom, quantite, prix);
+			 "Actif '%s' vendu avec succès. Quantité : %.5f, Prix : %.5f.", nom, quantite, prix);
 	print_centered(success_message, GREEN);
 }
+
 
 void handle_calculate_profit(t_portfolio *portfolio)
 {
