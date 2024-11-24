@@ -6,7 +6,7 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:37:10 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/23 14:48:45 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/11/24 18:09:01 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@
 # define YELLOW "\033[33m"
 # define LIGHT_BLUE "\033[94m"
 # define BLUE "\033[34m"
+#define MAGENTA "\033[1;35m"
 # define BOLD "\033[1m"
 # define WHITE "\033[37m"
 # define UNDERLINE "\033[4m"
@@ -52,5 +53,6 @@ typedef struct s_transaction t_transaction;
 #include "A4.handle.h"
 #include "A5.system.h"
 #include "A6.utils.h"
+
 
 #endif

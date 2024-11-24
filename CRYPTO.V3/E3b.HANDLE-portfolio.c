@@ -6,7 +6,7 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/21 01:31:13 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/24 05:12:53 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/11/25 00:07:35 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,53 +130,49 @@ void display_portfolio_short_summary(t_portfolio *portfolio)
 	char	row[256];
 	char	balance[64];
 
-	// Vérification si le portefeuille est valide
 	if (!portfolio)
 	{
 		print_centered("Erreur : Portefeuille non défini.", RED);
 		return;
 	}
 
-	// Titre centré
+	sort_assets_by_percentage(portfolio);
+
 	print_centered("======= RÉSUMÉ COURT DU PORTEFEUILLE =======", GRAY);
 
-	// En-tête du tableau centré
+	// En-tête de tableau centré
 	char header[256];
-	snprintf(header, sizeof(header), GRAY "%-15s%-15s" RESET, "Nom de l'actif", "Quantité");
+	snprintf(header, sizeof(header), GRAY "%-19s%-12s%-7s" RESET, "Nom de l'actif", "Quantité", "Pourcentage");
 	print_centered(header, NULL);
 
 	print_centered(GRAY "-------------------------------------------" RESET, NULL);
 
-	// Parcourir les actifs
 	i = 0;
 	while (i < portfolio->asset_count)
 	{
-		if (portfolio->assets[i])
-		{
-			// Vérifiez que l'actif a un historique valide
-			if (portfolio->assets[i]->historique_count > 0)
-			{
-				snprintf(row, sizeof(row), BLUE "%-10s" RESET YELLOW "%-15.5f" RESET,
-						 portfolio->assets[i]->nom,
-						 portfolio->assets[i]->historique[portfolio->assets[i]->historique_count - 1].quantite);
-			}
-			else
-			{
-				snprintf(row, sizeof(row), BLUE "%-15s" RESET RED "Non défini" RESET,
-						 portfolio->assets[i]->nom);
-			}
-			print_centered(row, NULL);
-		}
+		t_asset *asset = portfolio->assets[i];
+		float total_portfolio_value = calculate_portfolio_value(portfolio);
+		float percentage = 0.0f;
+
+		if (total_portfolio_value > 0.0f)
+			percentage = (calculate_asset_value(asset) / total_portfolio_value) * 100.0f;
+
+		// Construire la ligne avec le signe `%` collé au pourcentage
+		snprintf(row, sizeof(row), BLUE "%-15s" RESET YELLOW "%-15.5f" RESET MAGENTA "%.2f%%" RESET,
+				 asset->nom,
+				 asset->historique[asset->historique_count - 1].quantite,
+				 percentage);
+
+		print_centered(row, NULL);
 		i++;
 	}
 
-	// Afficher le solde en dollars centré
 	snprintf(balance, sizeof(balance), "Solde en dollars : " GREEN "%.2f $" RESET, portfolio->dollar_balance);
 	print_centered(balance, NULL);
 
-	// Ligne de séparation finale centrée
 	print_centered("===========================================", GRAY);
 }
+
 
 void display_portfolio_long_summary(t_portfolio *portfolio)
 {
@@ -194,9 +190,6 @@ void display_portfolio_long_summary(t_portfolio *portfolio)
 	// Fin du résumé
 	print_centered("===============================================", GRAY);
 }
-
-
-
 
 
 void	display_all_portfolios_short(t_portfolio_manager *manager)
