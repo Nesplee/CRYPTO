@@ -6,7 +6,7 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/21 03:01:52 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/23 21:24:38 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/11/24 02:11:03 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,14 +117,14 @@ int load_assets_history(FILE *file, t_portfolio *portfolio)
     char line[1024], buffer[256];
     int asset_index = 0;
 
-    printf("DEBUG: Début du chargement des actifs...\n");
+    printf(RED "CHARGEMENT:" RESET " Début du chargement des actifs...\n");
 
     while (fgets(line, sizeof(line), file))
     {
         trim_whitespace(line);
         if (strstr(line, "]")) // Fin de la section "assets"
         {
-            printf("DEBUG: Fin de la section 'assets' détectée.\n");
+            printf(RED "CHARGEMENT:" RESET " Fin de la section 'assets' détectée.\n");
             break;
         }
 
@@ -156,19 +156,19 @@ int load_assets_history(FILE *file, t_portfolio *portfolio)
                 if (sscanf(line, " \"name\": \"%[^\"]\",", buffer) == 1)
                 {
                     asset->nom = strdup(buffer);
-                    printf("DEBUG: Actif chargé : %s\n", asset->nom);
+                    printf(RED "CHARGEMENT:" RESET " Actif chargé : %s\n", asset->nom);
                 }
                 else if (sscanf(line, " \"prix_achat\": %f,", &asset->prix_achat) == 1)
                 {
-                    printf("DEBUG: Prix d'achat : %.2f\n", asset->prix_achat);
+                    printf(RED "CHARGEMENT:" RESET " Prix d'achat : %.2f\n", asset->prix_achat);
                 }
                 else if (sscanf(line, " \"prix_moyen\": %f,", &asset->prix_moyen) == 1)
                 {
-                    printf("DEBUG: Prix moyen : %.2f\n", asset->prix_moyen);
+                    printf(RED "CHARGEMENT:" RESET " Prix moyen : %.2f\n", asset->prix_moyen);
                 }
                 else if (strstr(line, "\"historique\": ["))
                 {
-                    printf("DEBUG: Début de l'historique détecté.\n");
+                    printf(RED "CHARGEMENT:" RESET " Début de l'historique détecté.\n");
 
                     asset->max_historique = 10;
                     asset->historique = malloc(asset->max_historique * sizeof(t_history));
@@ -186,7 +186,7 @@ int load_assets_history(FILE *file, t_portfolio *portfolio)
                         trim_whitespace(line);
                         if (strstr(line, "]")) // Fin de l'historique
                         {
-                            printf("DEBUG: Fin de l'historique détectée.\n");
+                            printf(RED "CHARGEMENT:" RESET " Fin de l'historique détectée.\n");
                             break;
                         }
 
@@ -201,15 +201,15 @@ int load_assets_history(FILE *file, t_portfolio *portfolio)
                                 if (sscanf(line, " \"date\": \"%[^\"]\",", buffer) == 1)
                                 {
                                     history->date = strdup(buffer);
-                                    printf("DEBUG: Date historique : %s\n", history->date);
+                                    printf(RED "CHARGEMENT:" RESET " Date historique : %s\n", history->date);
                                 }
                                 else if (sscanf(line, " \"prix\": %f,", &history->prix) == 1)
                                 {
-                                    printf("DEBUG: Prix historique : %.2f\n", history->prix);
+                                    printf(RED "CHARGEMENT:" RESET " Prix historique : %.2f\n", history->prix);
                                 }
                                 else if (sscanf(line, " \"quantite\": %f,", &history->quantite) == 1)
                                 {
-                                    printf("DEBUG: Quantité historique : %.2f\n", history->quantite);
+                                    printf(RED "CHARGEMENT:" RESET " Quantité historique : %.2f\n", history->quantite);
                                 }
                             }
                             asset->historique_count++;
@@ -234,12 +234,12 @@ int load_assets_history(FILE *file, t_portfolio *portfolio)
             }
 
             portfolio->assets[asset_index++] = asset;
-            printf("DEBUG: Actif ajouté avec succès : %s\n", asset->nom);
+            printf(RED "CHARGEMENT:" RESET " Actif ajouté avec succès : %s\n", asset->nom);
         }
     }
 
     portfolio->asset_count = asset_index;
-    printf("DEBUG: Nombre total d'actifs chargés : %d\n", portfolio->asset_count);
+    printf(RED "CHARGEMENT:" RESET " Nombre total d'actifs chargés : %d\n", portfolio->asset_count);
 
     return 1;
 }
@@ -276,7 +276,7 @@ int load_sales_history(FILE *file, t_asset *asset)
 
         if (strstr(line, "]")) // Fin de la section "sales"
         {
-            printf("DEBUG: Fin de la section 'sales' détectée.\n");
+            printf(RED "CHARGEMENT:" RESET " Fin de la section 'sales' détectée.\n");
             break;
         }
 
@@ -302,7 +302,7 @@ int load_sales_history(FILE *file, t_asset *asset)
                 printf(RED "Erreur: Allocation mémoire échouée pour le nom de la vente.\n" RESET);
                 return 0;
             }
-            printf("DEBUG: Nom de l'actif vendu : %s\n", sale->nom);
+            printf(RED "CHARGEMENT:" RESET " Nom de l'actif vendu : %s\n", sale->nom);
 
             while (fgets(line, sizeof(line), file) && !strstr(line, "}"))
             {
@@ -315,26 +315,26 @@ int load_sales_history(FILE *file, t_asset *asset)
                         printf(RED "Erreur: Allocation mémoire échouée pour la date de la vente.\n" RESET);
                         return 0;
                     }
-                    printf("DEBUG: Date de la vente : %s\n", sale->date);
+                    printf(RED "CHARGEMENT:" RESET " Date de la vente : %s\n", sale->date);
                 }
                 else if (sscanf(line, " \"quantite_vendue\": %f,", &quantite_vendue) == 1)
                 {
                     sale->quantite_vendue = quantite_vendue;  // Stocker la quantité vendue
-                    printf("DEBUG: Quantité vendue : %.2f\n", sale->quantite_vendue);
+                    printf(RED "CHARGEMENT:" RESET " Quantité vendue : %.2f\n", sale->quantite_vendue);
                 }
                 else if (sscanf(line, " \"prix_vente\": %f,", &prix_vente) == 1)
                 {
                     sale->prix_vente = prix_vente;  // Stocker le prix de vente
-                    printf("DEBUG: Prix de vente : %.2f\n", sale->prix_vente);
+                    printf(RED "CHARGEMENT:" RESET " Prix de vente : %.2f\n", sale->prix_vente);
                 }
                 else if (sscanf(line, " \"percent_exit\": %f,", &percent_exit) == 1)
                 {
                     sale->percent_exit = percent_exit;  // Stocker le pourcentage de gain/perte
-                    printf("DEBUG: Pourcentage de gain/perte : %.2f\n", sale->percent_exit);
+                    printf(RED "CHARGEMENT:" RESET " Pourcentage de gain/perte : %.2f\n", sale->percent_exit);
                 }
                 else if (sscanf(line, " \"profit_loss_exit\": %f,", &sale->profit_loss_exit) == 1)
                 {
-                    printf("DEBUG: Bénéfice/Perte sur la vente : %.2f\n", sale->profit_loss_exit);
+                    printf(RED "CHARGEMENT:" RESET " Bénéfice/Perte sur la vente : %.2f\n", sale->profit_loss_exit);
                 }
             }
 
@@ -353,13 +353,12 @@ int load_sales_history(FILE *file, t_asset *asset)
 
 
 
-
 int load_transactions_history(FILE *file, t_portfolio *portfolio)
 {
 		char line[1024], buffer[256];
 		int transaction_index = 0;
 
-		printf("DEBUG: Début du chargement des transactions...\n");
+		printf(RED "CHARGEMENT:" RESET " Début du chargement des transactions...\n");
 
 		// Vérifier si portfolio->transactions est NULL et l'allouer si nécessaire
 		if (portfolio->transactions == NULL)
@@ -371,7 +370,7 @@ int load_transactions_history(FILE *file, t_portfolio *portfolio)
 				printf("Erreur: Impossible d'allouer de la mémoire pour les transactions.\n");
 				return 0;
 			}
-			printf("DEBUG: Allocation initiale réussie pour les transactions.\n");
+			printf(RED "CHARGEMENT:" RESET " Allocation initiale réussie pour les transactions.\n");
 		}
 
 		// Lire le fichier ligne par ligne
@@ -382,7 +381,7 @@ int load_transactions_history(FILE *file, t_portfolio *portfolio)
 			// Si on arrive à la fin de la section transactions
 			if (strstr(line, "]"))
 			{
-				printf("DEBUG: Fin de la section 'transactions' détectée.\n");
+				printf(RED "CHARGEMENT:" RESET " Fin de la section 'transactions' détectée.\n");
 				break;
 			}
 
@@ -398,11 +397,11 @@ int load_transactions_history(FILE *file, t_portfolio *portfolio)
 					if (sscanf(line, " \"date\": \"%[^\"]\",", buffer) == 1)
 					{
 						transaction.date = strdup(buffer);  // S'assurer qu'on a bien alloué la mémoire pour la date
-						printf("DEBUG: Date de la transaction : %s\n", transaction.date);
+						printf(RED "CHARGEMENT:" RESET " Date de la transaction : %s\n", transaction.date);
 					}
 					else if (sscanf(line, " \"amount\": %f,", &transaction.amount) == 1)
 					{
-						printf("DEBUG: Montant de la transaction : %.2f\n", transaction.amount);
+						printf(RED "CHARGEMENT:" RESET " Montant de la transaction : %.2f\n", transaction.amount);
 					}
 				}
 
@@ -417,7 +416,7 @@ int load_transactions_history(FILE *file, t_portfolio *portfolio)
 						return 0;
 					}
 					portfolio->transactions = new_transactions;
-					printf("DEBUG: Redimensionnement du tableau des transactions réussi, nouvelle taille : %d\n", portfolio->max_transactions);
+					printf(RED "CHARGEMENT:" RESET " Redimensionnement du tableau des transactions réussi, nouvelle taille : %d\n", portfolio->max_transactions);
 				}
 
 				// Ajouter la transaction au tableau
@@ -427,7 +426,7 @@ int load_transactions_history(FILE *file, t_portfolio *portfolio)
 		}
 
 		// Vérification du nombre total de transactions chargées
-		printf("DEBUG: Nombre total de transactions chargées : %d\n", transaction_index);
+		printf(RED "CHARGEMENT:" RESET " Nombre total de transactions chargées : %d\n", transaction_index);
 		return 1;
 }
 

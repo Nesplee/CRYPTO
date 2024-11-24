@@ -6,7 +6,7 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/21 01:31:13 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/23 03:13:10 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/11/24 03:21:23 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,9 +138,12 @@ void display_portfolio_short_summary(t_portfolio *portfolio)
 	}
 
 	print_centered("======= RÉSUMÉ COURT DU PORTEFEUILLE =======", GRAY);
-	printf("%-15s%-15s\n", "Nom de l'actif", "Quantité");
-	printf("-------------------------------------------\n");
 
+	// En-tête de tableau
+	printf(GRAY "%-15s%-15s\n" RESET, "Nom de l'actif", "Quantité");
+	printf(GRAY "-------------------------------------------\n" RESET);
+
+	// Parcourir les actifs
 	i = 0;
 	while (i < portfolio->asset_count)
 	{
@@ -149,15 +152,14 @@ void display_portfolio_short_summary(t_portfolio *portfolio)
 			// Vérifiez que l'actif a un historique valide
 			if (portfolio->assets[i]->historique_count > 0)
 			{
-				snprintf(row, sizeof(row), "%-15s%-15.5f",
+				snprintf(row, sizeof(row), BLUE "%-15s" RESET YELLOW "%-15.5f" RESET,
 						 portfolio->assets[i]->nom,
 						 portfolio->assets[i]->historique[portfolio->assets[i]->historique_count - 1].quantite);
 			}
 			else
 			{
-				snprintf(row, sizeof(row), "%-15s%-15s",
-						 portfolio->assets[i]->nom,
-						 "Non défini");
+				snprintf(row, sizeof(row), BLUE "%-15s" RESET RED "Non défini" RESET,
+						 portfolio->assets[i]->nom);
 			}
 			printf("%s\n", row);
 		}
@@ -167,8 +169,10 @@ void display_portfolio_short_summary(t_portfolio *portfolio)
 	// Afficher le solde en dollars
 	snprintf(balance, sizeof(balance), "Solde en dollars : " GREEN "%.2f $" RESET, portfolio->dollar_balance);
 	printf("%s\n", balance);
+
 	print_centered("===========================================", GRAY);
 }
+
 
 
 void	display_portfolio_long_summary(t_portfolio *portfolio)
@@ -186,7 +190,6 @@ void	display_portfolio_long_summary(t_portfolio *portfolio)
 
 	// Résumé Global (PNL)
 	print_centered("======= RÉCAPITULATIF DES GAINS/PERTES =======", GRAY);
-	display_global_summary(portfolio);
 
 	// Transactions
 	print_centered("======= TRANSACTIONS =======", GRAY);

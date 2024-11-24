@@ -6,7 +6,7 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/21 01:31:46 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/23 19:19:44 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/11/24 03:22:52 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -193,8 +193,27 @@ t_portfolio_manager *create_portfolio_manager()
 t_portfolio *get_active_portfolio(t_portfolio_manager *manager)
 {
 	if (!manager || manager->portfolio_count == 0)
+	{
+		printf(RED "CHARGEMENT:" RESET " Aucun portefeuille actif trouvé. Manager ou portfolio_count invalide.\n");
 		return NULL;
+	}
 
-	// Retourne le premier portefeuille comme actif (ou implémentez une logique plus complexe)
+	// Vérifie que le premier portefeuille est valide
+	if (!manager->portfolios[0])
+	{
+		printf(RED "CHARGEMENT:" RESET " Le portefeuille actif (index 0) est NULL.\n");
+		return NULL;
+	}
+
+	// Vérifie que le portefeuille contient des actifs
+	if (manager->portfolios[0]->asset_count == 0)
+	{
+		printf(RED "CHARGEMENT:" RESET " Le portefeuille actif ne contient aucun actif.\n");
+	}
+
+	printf(RED "CHARGEMENT:" RESET " Portefeuille actif trouvé. Nom=%s, Solde=%.2f\n",
+		manager->portfolios[0]->name ? manager->portfolios[0]->name : "(nom non défini)",
+		manager->portfolios[0]->dollar_balance);
+
 	return manager->portfolios[0];
 }

@@ -1,7 +1,7 @@
 {
 	"name": "Dim",
 	"dollar_balance": 7000.00,
-	"last_updated": "N/A",
+	"last_updated": "",
 	"total_profit_loss": 0.00,
 	"assets": [
 		{
@@ -20,8 +20,8 @@
 					"date": "2000-01-05",
 					"prix": 2.00,
 					"quantite": 500.00,
-					"diff_begin": 1500.00,
-					"percent_begin": 100.00
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
 				}
 			],
 			"is_sold_out": false

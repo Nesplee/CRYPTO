@@ -6,7 +6,7 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:00:36 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/23 15:09:57 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/11/24 03:17:02 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -304,3 +304,24 @@ void log_message(const char *message)
 	}
 }
 
+void strip_colors(const char *input, char *output, size_t max_len)
+{
+	size_t i = 0, j = 0;
+	int in_color = 0;
+
+	while (input[i] != '\0' && j < max_len - 1)
+	{
+		if (input[i] == '\033') // Détecte le début d'une séquence ANSI
+			in_color = 1;
+
+		if (!in_color)
+			output[j++] = input[i];
+
+		if (in_color && input[i] == 'm') // Fin d'une séquence ANSI
+			in_color = 0;
+
+		i++;
+	}
+
+	output[j] = '\0';
+}

@@ -6,7 +6,7 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:11:34 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/23 20:31:58 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/11/24 02:41:16 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,38 +43,37 @@ void safe_free_array(void ***array, int count)
 
 void free_asset(t_asset *asset)
 {
-	int i;
-
 	if (!asset)
-	{
 		return;
-	}
-
-	// Libérer les historiques
-	i = 0;
-	while (i < asset->historique_count)
-	{
-		free(asset->historique[i].date);
-		i++;
-	}
-	free(asset->historique);
-
-	// Libérer les ventes
-	i = 0;
-	while (i < asset->sale_count)
-	{
-		free(asset->sales[i].nom);
-		free(asset->sales[i].date);
-		i++;
-	}
-	free(asset->sales);
 
 	// Libérer le nom de l'actif
-	free(asset->nom);
+	safe_free((void **)&asset->nom);
 
-	// Libérer la structure elle-même
-	free(asset);
+	// Libérer l'historique
+	if (asset->historique)
+	{
+		for (int i = 0; i < asset->historique_count; i++)
+		{
+			safe_free((void **)&asset->historique[i].date);
+		}
+		safe_free((void **)&asset->historique);
+	}
+
+	// Libérer les ventes
+	if (asset->sales)
+	{
+		for (int i = 0; i < asset->sale_count; i++)
+		{
+			safe_free((void **)&asset->sales[i].nom);
+			safe_free((void **)&asset->sales[i].date);
+		}
+		safe_free((void **)&asset->sales);
+	}
+
+	// Finalement libérer la structure elle-même
+	safe_free((void **)&asset);
 }
+
 
 void free_sold_assets(t_portfolio *portfolio)
 {
@@ -89,6 +88,7 @@ void free_sold_assets(t_portfolio *portfolio)
 		i++;
 	}
 }
+
 void free_portfolio(t_portfolio *portfolio)
 {
 	int i;
@@ -173,40 +173,52 @@ void free_portfolio_manager(t_portfolio_manager *manager)
 		i++;
 	}
 
-	// Réinitialiser le gestionnaire
-	manager->portfolio_count = 0;
-
-	// Remarque : le tableau `portfolios` est statique, donc aucune libération n'est nécessaire pour ce tableau.
+	safe_free((void **)&manager);
 }
 
-int resize_portfolio(t_portfolio *portfolio)
+int	resize_portfolio(t_portfolio *portfolio)
 {
-    int new_size;
-    t_asset **new_assets;
+	int			new_size;
+	t_asset		**new_assets;
 
-    if (!portfolio)
-    {
-        printf(RED "Erreur: resize_portfolio appelé avec un portefeuille NULL.\n" RESET);
-        return 0;
-    }
+	if (!portfolio)
+	{
+		printf(RED "Erreur: resize_portfolio appelé avec un portefeuille NULL.\n" RESET);
+		return (0);
+	}
 
-    printf(GRAY "Tentative de redimensionnement : taille actuelle %d, nouvelle taille %d.\n" RESET,
-           portfolio->max_assets, portfolio->max_assets * 2);
+	if (portfolio->assets == NULL)
+	{
+		printf(GRAY "Aucun tableau d'actifs alloué, allocation initiale en cours.\n" RESET);
+		portfolio->max_assets = 10;  // Taille initiale
+		portfolio->assets = malloc(sizeof(t_asset *) * portfolio->max_assets);
+		if (!portfolio->assets)
+		{
+			printf(RED "Erreur: Allocation initiale échouée.\n" RESET);
+			return (0);
+		}
+		portfolio->asset_count = 0;  // Initialiser le nombre d'actifs à 0
+		return (1);
+	}
 
-    new_size = portfolio->max_assets * 2;
-    new_assets = (t_asset **)realloc(portfolio->assets, sizeof(t_asset *) * new_size);
+	// Redimensionner si déjà alloué
+	printf(GRAY "Tentative de redimensionnement : taille actuelle %d, nouvelle taille %d.\n" RESET,
+		   portfolio->max_assets, portfolio->max_assets * 2);
 
-    if (!new_assets)
-    {
-        printf(RED "Erreur: Échec de l'allocation mémoire lors du redimensionnement du portefeuille.\n" RESET);
-        return 0;
-    }
+	new_size = portfolio->max_assets * 2;
+	new_assets = realloc(portfolio->assets, sizeof(t_asset *) * new_size);
 
-    portfolio->assets = new_assets;
-    portfolio->max_assets = new_size;
+	if (!new_assets)
+	{
+		printf(RED "Erreur: Échec de l'allocation mémoire lors du redimensionnement du portefeuille.\n" RESET);
+		return (0);
+	}
 
-    printf(GREEN "Redimensionnement réussi : nouvelle taille = %d.\n" RESET, new_size);
-    return 1;
+	portfolio->assets = new_assets;
+	portfolio->max_assets = new_size;
+
+	printf(GREEN "Redimensionnement réussi : nouvelle taille = %d.\n" RESET, new_size);
+	return (1);
 }
 
 
