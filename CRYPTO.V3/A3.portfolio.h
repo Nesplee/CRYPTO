@@ -6,7 +6,7 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 14:34:39 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/24 03:36:14 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/11/24 05:10:01 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,7 @@ typedef struct	s_portfolio
 	float			total_profit_loss;	//	Résumé des gains/pertes totaux
 }	t_portfolio;
 
+
 typedef struct	s_portfolio_manager
 {
 	int				portfolio_count;	//	Nombre de portefeuilles
@@ -97,6 +98,7 @@ void				display_portfolio(t_portfolio *portfolio);
 void 				display_global_summary(t_portfolio *portfolio);
 void				display_transactions(t_portfolio *portfolio);
 void 				display_all_sales(t_portfolio *portfolio);
+void 				combine_and_display_movements(t_portfolio *portfolio);
 
 void 				update_position(t_asset *asset, float nouveau_prix, float nouvelle_quantite, char *nouvelle_date);
 void				 update_current_price(t_asset *asset, float update_prix, char *date_suivi);

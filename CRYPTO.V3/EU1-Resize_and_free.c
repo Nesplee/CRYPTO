@@ -6,7 +6,7 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:11:34 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/24 02:41:16 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/11/24 05:01:45 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -153,6 +153,19 @@ void free_transactions(t_portfolio *portfolio)
 	portfolio->transaction_count = 0;
 	portfolio->max_transactions = 0;
 }
+
+void free_movements(t_movement *movements, int count)
+{
+		for (int i = 0; i < count; i++)
+		{
+			free(movements[i].type);
+			free(movements[i].date);
+			if (movements[i].nom)
+				free(movements[i].nom);
+		}
+		free(movements);
+}
+
 
 void free_portfolio_manager(t_portfolio_manager *manager)
 {

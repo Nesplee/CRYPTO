@@ -6,7 +6,7 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:00:36 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/24 04:44:45 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/11/24 05:01:34 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -422,4 +422,85 @@ void sort_by_date(t_sale *sales, int count)
 			}
 		}
 	}
+}
+
+int compare_movements(const void *a, const void *b)
+{
+	t_movement *move_a = (t_movement *)a;
+	t_movement *move_b = (t_movement *)b;
+	return strcmp(move_a->date, move_b->date);
+}
+
+t_movement *combine_and_sort_date(t_portfolio *portfolio, int *total_count)
+{
+		if (!portfolio || !total_count)
+			return NULL;
+
+		int movement_count = 0;
+		int i, j;
+
+		// Calcul du nombre total de mouvements
+		movement_count += portfolio->transaction_count;
+		for (i = 0; i < portfolio->asset_count; i++)
+		{
+			movement_count += portfolio->assets[i]->historique_count; // Achats/Updates
+			movement_count += portfolio->assets[i]->sale_count;       // Ventes
+		}
+
+		// Allouer un tableau de mouvements
+		t_movement *movements = malloc(movement_count * sizeof(t_movement));
+		if (!movements)
+			return NULL;
+
+		int index = 0;
+
+		// Ajouter les transactions
+		for (i = 0; i < portfolio->transaction_count; i++)
+		{
+			movements[index].type = strdup("Transaction");
+			movements[index].date = strdup(portfolio->transactions[i].date);
+			movements[index].nom = NULL; // Pas de nom pour les transactions
+			movements[index].amount = portfolio->transactions[i].amount;
+			movements[index].price = 0.0f; // Pas de prix pour les transactions
+			movements[index].pnl = 0.0f;   // Pas de PNL pour les transactions
+			index++;
+		}
+
+		// Ajouter les achats/updates
+		for (i = 0; i < portfolio->asset_count; i++)
+		{
+			t_asset *asset = portfolio->assets[i];
+			for (j = 0; j < asset->historique_count; j++)
+			{
+				movements[index].type = strdup("Achat/Update");
+				movements[index].date = strdup(asset->historique[j].date);
+				movements[index].nom = strdup(asset->nom);
+				movements[index].amount = asset->historique[j].quantite;
+				movements[index].price = asset->historique[j].prix;
+				movements[index].pnl = 0.0f; // Pas de PNL pour les achats/updates
+				index++;
+			}
+		}
+
+		// Ajouter les ventes
+		for (i = 0; i < portfolio->asset_count; i++)
+		{
+			t_asset *asset = portfolio->assets[i];
+			for (j = 0; j < asset->sale_count; j++)
+			{
+				movements[index].type = strdup("Vente");
+				movements[index].date = strdup(asset->sales[j].date);
+				movements[index].nom = strdup(asset->nom);
+				movements[index].amount = asset->sales[j].quantite_vendue;
+				movements[index].price = asset->sales[j].prix_vente;
+				movements[index].pnl = asset->sales[j].profit_loss_exit;
+				index++;
+			}
+		}
+
+		// Trier les mouvements par date
+		qsort(movements, movement_count, sizeof(t_movement), compare_movements);
+
+		*total_count = movement_count;
+		return movements;
 }

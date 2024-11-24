@@ -6,7 +6,7 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/21 01:31:13 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/24 03:46:01 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/11/24 05:12:53 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -178,9 +178,7 @@ void display_portfolio_short_summary(t_portfolio *portfolio)
 	print_centered("===========================================", GRAY);
 }
 
-
-
-void	display_portfolio_long_summary(t_portfolio *portfolio)
+void display_portfolio_long_summary(t_portfolio *portfolio)
 {
 	if (!portfolio)
 	{
@@ -188,19 +186,17 @@ void	display_portfolio_long_summary(t_portfolio *portfolio)
 		return;
 	}
 
-	print_centered("======= RÉSUMÉ LONG DU PORTEFEUILLE =======\n", GRAY);
+	print_centered("======= RÉSUMÉ LONG DU PORTEFEUILLE =======", GRAY);
 
-	// Actifs en détail
-	display_portfolio(portfolio);
-	printf("\n");
-	// Résumé Global (PNL)
-	display_all_sales(portfolio);
-	printf("\n");
-	// Transactions
-	display_transactions(portfolio);
-	printf("\n");
+	// Afficher tous les mouvements triés par date
+	combine_and_display_movements(portfolio);
+
+	// Fin du résumé
 	print_centered("===============================================", GRAY);
 }
+
+
+
 
 
 void	display_all_portfolios_short(t_portfolio_manager *manager)

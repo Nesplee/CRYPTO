@@ -6,7 +6,7 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/21 01:33:20 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/24 04:30:12 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/11/24 05:15:07 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -214,6 +214,73 @@ void display_all_sales(t_portfolio *portfolio)
 			}
 		}
 	}
+
+	print_centered("===============================================", GRAY);
+}
+
+void combine_and_display_movements(t_portfolio *portfolio)
+{
+	if (!portfolio)
+	{
+		print_centered("Erreur : Portefeuille non défini.", RED);
+		return;
+	}
+
+	int total_count = 0;
+	t_movement *movements = combine_and_sort_date(portfolio, &total_count);
+
+	if (!movements || total_count == 0)
+	{
+		print_centered("Aucun mouvement trouvé.", GRAY);
+		return;
+	}
+
+	// En-tête du tableau
+	print_centered("======= TOUS LES MOUVEMENTS =======", GRAY);
+
+	char header[256];
+	snprintf(header, sizeof(header), "%-15s %-15s %-15s %15s %10s %10s",
+			 "Date", "Type", "Nom", "Montant", "Prix", "PNL");
+	print_centered(header, GRAY);
+
+	print_centered("---------------------------------------------------------------------------------", GRAY);
+
+	// Parcourir et afficher les mouvements
+	for (int i = 0; i < total_count; i++)
+	{
+		char row[256];
+		char date_with_brackets[24];
+		char pnl_with_color[32]; // Temporaire pour PNL avec couleur
+
+		// Formatage de la date avec crochets
+		snprintf(date_with_brackets, sizeof(date_with_brackets),
+				 YELLOW "[%-10s]" RESET, movements[i].date);
+
+		// Formatage du PNL avec couleur
+		if (movements[i].pnl >= 0)
+		{
+			snprintf(pnl_with_color, sizeof(pnl_with_color), GREEN "%10.2f" RESET, movements[i].pnl);
+		}
+		else
+		{
+			snprintf(pnl_with_color, sizeof(pnl_with_color), RED "%10.2f" RESET, movements[i].pnl);
+		}
+
+		// Construire la ligne formatée avec alignement précis
+		snprintf(row, sizeof(row), "%-15s %-15s %-15s %15.2f %10.2f %10s",
+				 date_with_brackets,
+				 movements[i].type,
+				 movements[i].nom ? movements[i].nom : "-",
+				 movements[i].amount,
+				 movements[i].price,
+				 pnl_with_color);
+
+		// Afficher la ligne centrée
+		print_centered(row, NULL);
+	}
+
+	// Libérer la mémoire des mouvements
+	free_movements(movements, total_count);
 
 	print_centered("===============================================", GRAY);
 }

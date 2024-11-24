@@ -6,7 +6,7 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 14:33:21 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/24 04:46:21 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/11/24 04:57:52 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,18 @@
 # define A6_UTILS_H
 
 #include "A1.master.h"
+
+
+typedef struct s_movement
+{
+	char *type;      // Type : "Achat", "Vente", "Transaction"
+	char *date;      // Date du mouvement
+	char *nom;       // Nom de l'actif (ou NULL pour les transactions)
+	float amount;    // Montant ou quantité
+	float price;     // Prix pour les ventes ou achats
+	float pnl;       // PNL pour les ventes (0 pour les autres types)
+} t_movement;
+
 
 void				ft_putchar(char c);
 int					ft_strlen(const char *str);
@@ -58,5 +70,8 @@ void				trim_whitespace(char *str);
 void 				log_message(const char *message);
 int 				compare_dates(const char *date1, const char *date2);
 void 				sort_by_date(t_sale *sales, int count);
+int 				compare_movements(const void *a, const void *b);
+t_movement 			*combine_and_sort_date(t_portfolio *portfolio, int *total_count);
+void 				free_movements(t_movement *movements, int count);
 
 #endif
