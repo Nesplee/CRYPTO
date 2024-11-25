@@ -6,7 +6,7 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/21 01:31:13 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/25 00:53:52 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/11/25 04:09:23 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -203,6 +203,71 @@ void display_portfolio_long_summary(t_portfolio *portfolio)
 	print_centered("===============================================", GRAY);
 }
 
+void display_current_portfolio_state(t_portfolio *portfolio)
+{
+	if (!portfolio)
+	{
+		print_centered("Erreur : Portefeuille non défini.", RED);
+		return;
+	}
+
+	// Largeur fixe des colonnes
+	const int col_width = 15;
+
+	// En-tête du tableau
+	print_centered("======= ÉTAT ACTUEL DU PORTEFEUILLE =======", GRAY);
+
+	char header[256];
+	snprintf(header, sizeof(header), "%-*s %-*s %-*s %-*s %-*s",
+			 col_width, "Nom", col_width, "Quantité", col_width, "Prix Moyen",
+			 col_width, "Valeur", col_width, "PNL");
+	print_centered(header, GRAY);
+
+	print_centered("-------------------------------------------------------------------------------", GRAY);
+
+	// Parcourir les actifs et afficher leurs informations
+	for (int i = 0; i < portfolio->asset_count; i++)
+	{
+		t_asset *asset = portfolio->assets[i];
+		if (!asset)
+			continue;
+
+		// Calculer les valeurs
+		float last_price = asset->historique[asset->historique_count - 1].prix;
+		float quantity = asset->historique[asset->historique_count - 1].quantite;
+		float valeur = last_price * quantity;
+		float pnl = (last_price - asset->prix_moyen) * quantity;
+
+		// Formater les données avec couleurs
+		char row[512];
+		snprintf(row, sizeof(row),
+				 BLUE "%-*s" RESET " " YELLOW "%-*.*f" RESET " " LIGHT_BLUE "%-*.*f" RESET " " MAGENTA "%-*.*f" RESET " %s%-*.2f" RESET,
+				 col_width, asset->nom,                         // Nom (BLEU)
+				 col_width, 5, quantity,                        // Quantité (JAUNE)
+				 col_width, 5, asset->prix_moyen,               // Prix moyen (BLEU CLAIR)
+				 col_width, 2, valeur,                          // Valeur (MAGENTA)
+				 pnl >= 0 ? GREEN : RED,                        // Couleur pour le PNL
+				 col_width, pnl);                               // PNL
+
+		// Afficher la ligne centrée
+		print_centered(row, NULL);
+	}
+
+	// Ligne de séparation
+	print_centered("-------------------------------------------------------------------------------", GRAY);
+
+	// Ajouter l'historique des transactions
+	print_centered("======= HISTORIQUE DES TRANSACTIONS =======", GRAY);
+	display_transactions(portfolio);
+
+	// Ajouter l'historique des ventes
+	print_centered("======= HISTORIQUE DES VENTES =======", GRAY);
+	display_all_sales(portfolio);
+
+	print_centered("===========================================", GRAY);
+}
+
+
 
 void	display_all_portfolios_short(t_portfolio_manager *manager)
 {
@@ -219,12 +284,12 @@ void	display_all_portfolios_short(t_portfolio_manager *manager)
 	i = 0;
 	while (i < manager->portfolio_count)
 	{
-		char	header[64];
-		snprintf(header, sizeof(header), "Portefeuille %d :", i + 1);
-		print_centered(header, BLUE);
-		print_centered("-------------------------------------------\n", GRAY);
-		display_portfolio_short_summary(manager->portfolios[i]);
-		i++;
+	char	header[64];
+	snprintf(header, sizeof(header), "Portefeuille %d :", i + 1);
+	print_centered(header, BLUE);
+	print_centered("-------------------------------------------------------------------------------", GRAY);
+	display_portfolio_short_summary(manager->portfolios[i]);
+	i++;
 	}
 
 	print_centered("=====================================================", GRAY);
@@ -245,12 +310,12 @@ void	display_all_portfolios_long(t_portfolio_manager *manager)
 	i = 0;
 	while (i < manager->portfolio_count)
 	{
-		char	header[64];
-		snprintf(header, sizeof(header), "Portefeuille %d :", i + 1);
-		print_centered(header, BLUE);
-		print_centered("-------------------------------------------", GRAY);
-		display_portfolio_long_summary(manager->portfolios[i]);
-		i++;
+	char	header[64];
+	snprintf(header, sizeof(header), "Portefeuille %d :", i + 1);
+	print_centered(header, BLUE);
+	print_centered("-------------------------------------------------------------------------------", GRAY);
+	display_portfolio_long_summary(manager->portfolios[i]);
+	i++;
 	}
 
 	print_centered("=====================================================", GRAY);

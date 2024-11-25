@@ -1,0 +1,999 @@
+{
+	"name": "MAIN",
+	"dollar_balance": 0.00,
+	"last_updated": "",
+	"total_profit_loss": 0.00,
+	"assets": [
+		{
+			"name": "MNT",
+			"prix_achat": 0.54830,
+			"prix_moyen": 0.89204,
+			"historique": [
+				{
+					"date": "2023-12-02",
+					"prix": 0.54830,
+					"quantite": 131.92000,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2023-12-03",
+					"prix": 0.54250,
+					"quantite": 305.84000,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2024-03-16",
+					"prix": 0.89370,
+					"quantite": 494.87000,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2024-03-29",
+					"prix": 1.17000,
+					"quantite": 856.42999,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2024-03-30",
+					"prix": 1.18000,
+					"quantite": 997.10999,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2024-03-31",
+					"prix": 1.31000,
+					"quantite": 1149.64001,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2024-07-07",
+					"prix": 0.64430,
+					"quantite": 1304.60999,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2024-10-29",
+					"prix": 0.61040,
+					"quantite": 1519.55994,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2024-11-10",
+					"prix": 0.80120,
+					"quantite": 1519.55994,
+					"diff_begin": 0.25,
+					"percent_begin": 46.12
+				}
+			],
+			"is_sold_out": false
+		},
+		{
+			"name": "GALA",
+			"prix_achat": 0.04530,
+			"prix_moyen": 0.03647,
+			"historique": [
+				{
+					"date": "2024-03-11",
+					"prix": 0.04530,
+					"quantite": 7802.00000,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2024-07-07",
+					"prix": 0.02160,
+					"quantite": 12433.00000,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2024-11-10",
+					"prix": 0.02530,
+					"quantite": 12433.00000,
+					"diff_begin": -0.02,
+					"percent_begin": -44.15
+				}
+			],
+			"is_sold_out": false
+		},
+		{
+			"name": "ANKR",
+			"prix_achat": 0.02910,
+			"prix_moyen": 0.02910,
+			"historique": [
+				{
+					"date": "2024-07-26",
+					"prix": 0.02910,
+					"quantite": 10208.00000,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2024-11-10",
+					"prix": 0.02900,
+					"quantite": 10208.00000,
+					"diff_begin": -0.00,
+					"percent_begin": -0.34
+				}
+			],
+			"is_sold_out": false
+		},
+		{
+			"name": "AVAX",
+			"prix_achat": 33.93000,
+			"prix_moyen": 17.30333,
+			"historique": [
+				{
+					"date": "2021-09-07",
+					"prix": 33.93000,
+					"quantite": 2.50000,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2023-09-21",
+					"prix": 8.99000,
+					"quantite": 7.50000,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2024-11-10",
+					"prix": 32.45000,
+					"quantite": 7.50000,
+					"diff_begin": -1.48,
+					"percent_begin": -4.36
+				}
+			],
+			"is_sold_out": false
+		},
+		{
+			"name": "KSM",
+			"prix_achat": 149.85001,
+			"prix_moyen": 28.89034,
+			"historique": [
+				{
+					"date": "2021-07-23",
+					"prix": 149.85001,
+					"quantite": 0.59790,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2021-09-07",
+					"prix": 250.00000,
+					"quantite": 0.70420,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2023-09-21",
+					"prix": 19.60000,
+					"quantite": 2.70220,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2023-10-05",
+					"prix": 18.41000,
+					"quantite": 5.99890,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2023-10-11",
+					"prix": 16.87000,
+					"quantite": 9.55230,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2024-11-10",
+					"prix": 20.29000,
+					"quantite": 9.55230,
+					"diff_begin": -129.56,
+					"percent_begin": -86.46
+				}
+			],
+			"is_sold_out": false
+		},
+		{
+			"name": "NEAR",
+			"prix_achat": 5.61000,
+			"prix_moyen": 5.54129,
+			"historique": [
+				{
+					"date": "2024-07-25",
+					"prix": 5.61000,
+					"quantite": 18.16000,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2024-07-25",
+					"prix": 5.48000,
+					"quantite": 38.51860,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2024-11-10",
+					"prix": 4.85000,
+					"quantite": 38.51860,
+					"diff_begin": -0.76,
+					"percent_begin": -13.55
+				}
+			],
+			"is_sold_out": false
+		},
+		{
+			"name": "ENA",
+			"prix_achat": 0.85070,
+			"prix_moyen": 0.55431,
+			"historique": [
+				{
+					"date": "2024-04-05",
+					"prix": 0.85070,
+					"quantite": 104.82000,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2024-07-07",
+					"prix": 0.39620,
+					"quantite": 301.31000,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2024-11-10",
+					"prix": 0.55510,
+					"quantite": 301.31000,
+					"diff_begin": -0.30,
+					"percent_begin": -34.75
+				}
+			],
+			"is_sold_out": false
+		},
+		{
+			"name": "COMP",
+			"prix_achat": 273.00000,
+			"prix_moyen": 132.93690,
+			"historique": [
+				{
+					"date": "2021-12-02",
+					"prix": 273.00000,
+					"quantite": 1.10000,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2023-11-06",
+					"prix": 50.09000,
+					"quantite": 2.10000,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2023-11-06",
+					"prix": 50.12000,
+					"quantite": 2.96000,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2024-11-10",
+					"prix": 50.46000,
+					"quantite": 2.96000,
+					"diff_begin": -222.54,
+					"percent_begin": -81.52
+				}
+			],
+			"is_sold_out": false
+		},
+		{
+			"name": "ETH",
+			"prix_achat": 3300.00000,
+			"prix_moyen": 3300.00000,
+			"historique": [
+				{
+					"date": "2021-04-18",
+					"prix": 3300.00000,
+					"quantite": 0.04480,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				}
+			],
+			"is_sold_out": false
+		},
+		{
+			"name": "GRT",
+			"prix_achat": 0.39290,
+			"prix_moyen": 0.24768,
+			"historique": [
+				{
+					"date": "2024-03-31",
+					"prix": 0.39290,
+					"quantite": 229.14000,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2024-07-25",
+					"prix": 0.18670,
+					"quantite": 774.83002,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2024-11-10",
+					"prix": 0.17950,
+					"quantite": 774.83002,
+					"diff_begin": -0.21,
+					"percent_begin": -54.31
+				}
+			],
+			"is_sold_out": false
+		},
+		{
+			"name": "ICP",
+			"prix_achat": 16.67000,
+			"prix_moyen": 10.57123,
+			"historique": [
+				{
+					"date": "2021-02-24",
+					"prix": 16.67000,
+					"quantite": 6.75320,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2023-11-13",
+					"prix": 4.69000,
+					"quantite": 13.75620,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2024-11-10",
+					"prix": 9.26100,
+					"quantite": 13.75620,
+					"diff_begin": -7.41,
+					"percent_begin": -44.45
+				}
+			],
+			"is_sold_out": false
+		},
+		{
+			"name": "VET",
+			"prix_achat": 0.23500,
+			"prix_moyen": 0.07054,
+			"historique": [
+				{
+					"date": "2021-04-21",
+					"prix": 0.23500,
+					"quantite": 60.00000,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2021-11-13",
+					"prix": 0.15820,
+					"quantite": 1108.00000,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2021-12-04",
+					"prix": 0.09360,
+					"quantite": 1740.16992,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2023-11-29",
+					"prix": 0.02160,
+					"quantite": 2109.89990,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2023-12-05",
+					"prix": 0.02380,
+					"quantite": 2989.11987,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2023-12-06",
+					"prix": 0.02490,
+					"quantite": 4241.12012,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2024-11-10",
+					"prix": 0.02580,
+					"quantite": 4241.12012,
+					"diff_begin": -0.21,
+					"percent_begin": -89.02
+				}
+			],
+			"is_sold_out": false
+		},
+		{
+			"name": "DOT",
+			"prix_achat": 26.89000,
+			"prix_moyen": 15.77781,
+			"historique": [
+				{
+					"date": "2021-04-03",
+					"prix": 26.89000,
+					"quantite": 10.50000,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2023-09-21",
+					"prix": 4.11000,
+					"quantite": 20.50000,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2024-11-10",
+					"prix": 5.26700,
+					"quantite": 20.50000,
+					"diff_begin": -21.62,
+					"percent_begin": -80.41
+				}
+			],
+			"is_sold_out": false
+		},
+		{
+			"name": "ETHFI",
+			"prix_achat": 7.32000,
+			"prix_moyen": 7.32000,
+			"historique": [
+				{
+					"date": "2024-03-28",
+					"prix": 7.32000,
+					"quantite": 14.09000,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				}
+			],
+			"is_sold_out": false
+		},
+		{
+			"name": "COT",
+			"prix_achat": 0.02960,
+			"prix_moyen": 0.02960,
+			"historique": [
+				{
+					"date": "2024-06-05",
+					"prix": 0.02960,
+					"quantite": 3450.00000,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				}
+			],
+			"is_sold_out": false
+		},
+		{
+			"name": "PSG",
+			"prix_achat": 33.33000,
+			"prix_moyen": 33.33000,
+			"historique": [
+				{
+					"date": "2021-11-11",
+					"prix": 33.33000,
+					"quantite": 3.00000,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				}
+			],
+			"is_sold_out": false
+		},
+		{
+			"name": "DYDX",
+			"prix_achat": 2.99000,
+			"prix_moyen": 2.99000,
+			"historique": [
+				{
+					"date": "2023-12-06",
+					"prix": 2.99000,
+					"quantite": 32.80000,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				}
+			],
+			"is_sold_out": false
+		},
+		{
+			"name": "GRAPE",
+			"prix_achat": 0.08060,
+			"prix_moyen": 0.08060,
+			"historique": [
+				{
+					"date": "2024-03-31",
+					"prix": 0.08060,
+					"quantite": 1154.00000,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				}
+			],
+			"is_sold_out": false
+		},
+		{
+			"name": "VRTX",
+			"prix_achat": 0.44750,
+			"prix_moyen": 0.44750,
+			"historique": [
+				{
+					"date": "2024-03-31",
+					"prix": 0.44750,
+					"quantite": 182.27000,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				}
+			],
+			"is_sold_out": false
+		},
+		{
+			"name": "BEAM",
+			"prix_achat": 0.02512,
+			"prix_moyen": 0.02329,
+			"historique": [
+				{
+					"date": "2022-03-31",
+					"prix": 0.02512,
+					"quantite": 4159.00000,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2024-04-18",
+					"prix": 0.01576,
+					"quantite": 5173.00000,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				}
+			],
+			"is_sold_out": false
+		},
+		{
+			"name": "LINK",
+			"prix_achat": 14.18000,
+			"prix_moyen": 14.18000,
+			"historique": [
+				{
+					"date": "2023-12-20",
+					"prix": 14.18000,
+					"quantite": 5.03000,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				}
+			],
+			"is_sold_out": false
+		},
+		{
+			"name": "EGLD",
+			"prix_achat": 26.91000,
+			"prix_moyen": 26.91000,
+			"historique": [
+				{
+					"date": "2023-09-21",
+					"prix": 26.91000,
+					"quantite": 2.62740,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				}
+			],
+			"is_sold_out": false
+		},
+		{
+			"name": "XTZ",
+			"prix_achat": 4.65000,
+			"prix_moyen": 1.91106,
+			"historique": [
+				{
+					"date": "2021-11-27",
+					"prix": 4.65000,
+					"quantite": 26.10000,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2023-11-03",
+					"prix": 0.78600,
+					"quantite": 89.64000,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2024-11-10",
+					"prix": 0.72470,
+					"quantite": 89.64000,
+					"diff_begin": -3.93,
+					"percent_begin": -84.42
+				}
+			],
+			"is_sold_out": false
+		},
+		{
+			"name": "AXS",
+			"prix_achat": 152.05000,
+			"prix_moyen": 19.07361,
+			"historique": [
+				{
+					"date": "2021-11-13",
+					"prix": 152.05000,
+					"quantite": 1.09890,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2023-10-05",
+					"prix": 4.49000,
+					"quantite": 11.11890,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2024-11-10",
+					"prix": 5.66140,
+					"quantite": 11.11890,
+					"diff_begin": -146.39,
+					"percent_begin": -96.28
+				}
+			],
+			"is_sold_out": false
+		},
+		{
+			"name": "POL",
+			"prix_achat": 0.28630,
+			"prix_moyen": 0.28630,
+			"historique": [
+				{
+					"date": "2021-11-03",
+					"prix": 0.28630,
+					"quantite": 215.53000,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				}
+			],
+			"is_sold_out": false
+		},
+		{
+			"name": "XVS",
+			"prix_achat": 39.30000,
+			"prix_moyen": 39.30000,
+			"historique": [
+				{
+					"date": "2021-04-18",
+					"prix": 39.30000,
+					"quantite": 1.35000,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				}
+			],
+			"is_sold_out": false
+		},
+		{
+			"name": "SAND",
+			"prix_achat": 4.72000,
+			"prix_moyen": 0.98906,
+			"historique": [
+				{
+					"date": "2022-01-10",
+					"prix": 4.72000,
+					"quantite": 28.00000,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2023-10-07",
+					"prix": 0.30110,
+					"quantite": 179.85001,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2024-11-10",
+					"prix": 0.29420,
+					"quantite": 179.85001,
+					"diff_begin": -4.43,
+					"percent_begin": -93.77
+				}
+			],
+			"is_sold_out": false
+		},
+		{
+			"name": "FIDA",
+			"prix_achat": 0.50710,
+			"prix_moyen": 0.50710,
+			"historique": [
+				{
+					"date": "2024-03-28",
+					"prix": 0.50710,
+					"quantite": 102.80000,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				}
+			],
+			"is_sold_out": false
+		},
+		{
+			"name": "CKB",
+			"prix_achat": 0.01246,
+			"prix_moyen": 0.01246,
+			"historique": [
+				{
+					"date": "2023-03-31",
+					"prix": 0.01246,
+					"quantite": 3933.00000,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				}
+			],
+			"is_sold_out": false
+		},
+		{
+			"name": "CAKE",
+			"prix_achat": 19.95000,
+			"prix_moyen": 5.16470,
+			"historique": [
+				{
+					"date": "2021-09-11",
+					"prix": 19.95000,
+					"quantite": 3.05690,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2023-11-29",
+					"prix": 2.26000,
+					"quantite": 18.61690,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				}
+			],
+			"is_sold_out": false
+		},
+		{
+			"name": "BRAWL",
+			"prix_achat": 0.00772,
+			"prix_moyen": 0.00772,
+			"historique": [
+				{
+					"date": "2024-03-31",
+					"prix": 0.00772,
+					"quantite": 5178.00000,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				}
+			],
+			"is_sold_out": false
+		},
+		{
+			"name": "CHZ",
+			"prix_achat": 0.55750,
+			"prix_moyen": 0.08241,
+			"historique": [
+				{
+					"date": "2021-04-21",
+					"prix": 0.55750,
+					"quantite": 22.40000,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2023-10-05",
+					"prix": 0.06080,
+					"quantite": 514.91003,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				}
+			],
+			"is_sold_out": false
+		},
+		{
+			"name": "SUSHI",
+			"prix_achat": 9.18000,
+			"prix_moyen": 4.26527,
+			"historique": [
+				{
+					"date": "2021-08-05",
+					"prix": 9.18000,
+					"quantite": 4.42700,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2024-03-31",
+					"prix": 1.89000,
+					"quantite": 13.58700,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				}
+			],
+			"is_sold_out": false
+		},
+		{
+			"name": "SUPER",
+			"prix_achat": 2.23000,
+			"prix_moyen": 1.89075,
+			"historique": [
+				{
+					"date": "2021-05-10",
+					"prix": 2.23000,
+					"quantite": 4.69530,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2021-04-02",
+					"prix": 3.09000,
+					"quantite": 8.04290,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2024-03-31",
+					"prix": 1.33000,
+					"quantite": 18.04290,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				}
+			],
+			"is_sold_out": false
+		},
+		{
+			"name": "FLOKI",
+			"prix_achat": 0.00021,
+			"prix_moyen": 0.00021,
+			"historique": [
+				{
+					"date": "2024-03-18",
+					"prix": 0.00021,
+					"quantite": 93855.00000,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				}
+			],
+			"is_sold_out": false
+		},
+		{
+			"name": "LUNC",
+			"prix_achat": 0.00016,
+			"prix_moyen": 0.00016,
+			"historique": [
+				{
+					"date": "2023-12-20",
+					"prix": 0.00016,
+					"quantite": 102975.00000,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				}
+			],
+			"is_sold_out": false
+		},
+		{
+			"name": "XEC",
+			"prix_achat": 0.00024,
+			"prix_moyen": 0.00011,
+			"historique": [
+				{
+					"date": "2021-09-09",
+					"prix": 0.00024,
+					"quantite": 52585.00000,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2024-03-31",
+					"prix": 0.00007,
+					"quantite": 205350.00000,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				}
+			],
+			"is_sold_out": false
+		},
+		{
+			"name": "BONK",
+			"prix_achat": 0.00002,
+			"prix_moyen": 0.00002,
+			"historique": [
+				{
+					"date": "2023-12-20",
+					"prix": 0.00002,
+					"quantite": 714274.00000,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				}
+			],
+			"is_sold_out": false
+		},
+		{
+			"name": "SXP",
+			"prix_achat": 3.73000,
+			"prix_moyen": 1.01653,
+			"historique": [
+				{
+					"date": "2021-04-21",
+					"prix": 3.73000,
+					"quantite": 4.01900,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2024-03-31",
+					"prix": 0.48970,
+					"quantite": 24.71900,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				}
+			],
+			"is_sold_out": false
+		},
+		{
+			"name": "ALGO",
+			"prix_achat": 1.39000,
+			"prix_moyen": 0.20525,
+			"historique": [
+				{
+					"date": "2021-05-10",
+					"prix": 1.39000,
+					"quantite": 8.03200,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2023-11-03",
+					"prix": 0.11000,
+					"quantite": 107.93200,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				}
+			],
+			"is_sold_out": false
+		},
+		{
+			"name": "AKRO",
+			"prix_achat": 0.05150,
+			"prix_moyen": 0.01526,
+			"historique": [
+				{
+					"date": "2021-05-04",
+					"prix": 0.05150,
+					"quantite": 195.00000,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				},
+				{
+					"date": "2024-03-31",
+					"prix": 0.00893,
+					"quantite": 1312.00000,
+					"diff_begin": 0.00,
+					"percent_begin": 0.00
+				}
+			],
+			"is_sold_out": false
+		}
+	],
+	"sales": [
+
+	],
+	"transactions": [
+	]
+}

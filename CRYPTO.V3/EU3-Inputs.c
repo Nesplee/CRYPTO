@@ -6,7 +6,7 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/21 00:35:15 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/25 01:15:42 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/11/25 04:23:08 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,84 +82,91 @@ float input_amount()
 
 int input_date(char *date, size_t size)
 {
-	if (!date || size <= 1) // Validation des paramètres
-		return 0;
+    if (!date || size <= 1) // Validation des paramètres
+        return 0;
 
-	while (1) // Boucle infinie pour permettre plusieurs tentatives
-	{
-		// Demander à l'utilisateur d'entrer une date
-		print_centered("Veuillez entrer une date au format [YYYY-MM-DD] :", LIGHT_BLUE);
+    while (1) // Boucle infinie pour permettre plusieurs tentatives
+    {
+        // Demander à l'utilisateur d'entrer une date
+        print_centered("Veuillez entrer une date au format [YYYY-MM-DD] :", LIGHT_BLUE);
 
-		if (!fgets(date, size, stdin)) // Lecture sécurisée
-		{
-			print_centered("Erreur : Lecture échouée.", RED);
-			return 0;
-		}
+        if (!fgets(date, size, stdin)) // Lecture sécurisée
+        {
+            print_centered("Erreur : Lecture échouée.", RED);
+            return 0;
+        }
 
-		// Nettoyage du '\n' final
-		date[strcspn(date, "\n")] = '\0';
-		trim_whitespace(date);
+        // Nettoyage du '\n' final
+        date[strcspn(date, "\n")] = '\0';
+        trim_whitespace(date);
 
-		// Validation des paramètres et affichage des erreurs spécifiques
-		if (ft_strlen(date) != 10 || date[4] != '-' || date[7] != '-')
-		{
-			print_centered("Erreur : Format attendu [YYYY-MM-DD].", RED);
-			continue;
-		}
+        // Remplacer des séparateurs alternatifs
+        size_t len = ft_strlen(date);
+        for (size_t i = 0; i < len; i++)
+        {
+            if (date[i] == '.' || date[i] == '/')
+                date[i] = '-';
+        }
 
-		int year, month, day;
-		sscanf(date, "%4d-%2d-%2d", &year, &month, &day);
+        // Validation des paramètres et affichage des erreurs spécifiques
+        if (ft_strlen(date) != 10 || date[4] != '-' || date[7] != '-')
+        {
+            print_centered("Erreur : Format attendu [YYYY-MM-DD].", RED);
+            continue;
+        }
 
-		// Vérifier l'année
-		if (year < 1)
-		{
-			print_centered("Erreur : L'année doit être valide.", RED);
-			continue;
-		}
+        int year, month, day;
+        sscanf(date, "%4d-%2d-%2d", &year, &month, &day);
 
-		// Vérifier le mois
-		if (month < 1 || month > 12)
-		{
-			print_centered("Erreur : Le mois doit être compris entre 1 et 12.", RED);
-			continue;
-		}
+        // Vérifier l'année
+        if (year < 1)
+        {
+            print_centered("Erreur : L'année doit être valide.", RED);
+            continue;
+        }
 
-		// Vérifier les jours dans chaque mois
-		int max_days = 31;
-		if (month == 4 || month == 6 || month == 9 || month == 11) // Mois avec 30 jours
-		{
-			max_days = 30;
-		}
-		else if (month == 2) // Février
-		{
-			if ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0))
-			{
-				max_days = 29; // Année bissextile
-			}
-			else
-			{
-				max_days = 28; // Année non bissextile
-			}
-		}
+        // Vérifier le mois
+        if (month < 1 || month > 12)
+        {
+            print_centered("Erreur : Le mois doit être compris entre 1 et 12.", RED);
+            continue;
+        }
 
-		// Valider le jour
-		if (day < 1 || day > max_days)
-		{
-			char error_message[100];
-			snprintf(error_message, sizeof(error_message),
-					 "Erreur : Ce mois contient seulement %d jours.", max_days);
-			print_centered(error_message, RED);
-			continue;
-		}
+        // Vérifier les jours dans chaque mois
+        int max_days = 31;
+        if (month == 4 || month == 6 || month == 9 || month == 11) // Mois avec 30 jours
+        {
+            max_days = 30;
+        }
+        else if (month == 2) // Février
+        {
+            if ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0))
+            {
+                max_days = 29; // Année bissextile
+            }
+            else
+            {
+                max_days = 28; // Année non bissextile
+            }
+        }
 
-		// Si tout est valide
-		char success_message[100];
-		snprintf(success_message, sizeof(success_message), "Date capturée : '%s'", date);
-		print_centered(success_message, GREEN);
-		return 1; // Date valide
-	}
+        // Valider le jour
+        if (day < 1 || day > max_days)
+        {
+            char error_message[100];
+            snprintf(error_message, sizeof(error_message),
+                     "Erreur : Ce mois contient seulement %d jours.", max_days);
+            print_centered(error_message, RED);
+            continue;
+        }
+
+        // Si tout est valide
+        char success_message[100];
+        snprintf(success_message, sizeof(success_message), "Date capturée : '%s'", date);
+        print_centered(success_message, GREEN);
+        return 1; // Date valide
+    }
 }
-
 
 
 

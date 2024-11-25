@@ -6,7 +6,7 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/21 03:01:52 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/24 02:11:03 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/11/25 02:46:57 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,8 @@ int save_assets_history(FILE *file, const t_portfolio *portfolio)
 		t_asset *asset = portfolio->assets[i];
 		fprintf(file, "\t\t{\n");
 		fprintf(file, "\t\t\t\"name\": \"%s\",\n", asset->nom ? asset->nom : "null");
-		fprintf(file, "\t\t\t\"prix_achat\": %.2f,\n", asset->prix_achat);
-		fprintf(file, "\t\t\t\"prix_moyen\": %.2f,\n", asset->prix_moyen);
+		fprintf(file, "\t\t\t\"prix_achat\": %.5f,\n", asset->prix_achat);
+		fprintf(file, "\t\t\t\"prix_moyen\": %.5f,\n", asset->prix_moyen);
 
 		// Sauvegarde de l'historique
 		fprintf(file, "\t\t\t\"historique\": [\n");
@@ -30,8 +30,8 @@ int save_assets_history(FILE *file, const t_portfolio *portfolio)
 			t_history *history = &asset->historique[j];
 			fprintf(file, "\t\t\t\t{\n");
 			fprintf(file, "\t\t\t\t\t\"date\": \"%s\",\n", history->date ? history->date : "null");
-			fprintf(file, "\t\t\t\t\t\"prix\": %.2f,\n", history->prix);
-			fprintf(file, "\t\t\t\t\t\"quantite\": %.2f,\n", history->quantite);
+			fprintf(file, "\t\t\t\t\t\"prix\": %.5f,\n", history->prix);
+			fprintf(file, "\t\t\t\t\t\"quantite\": %.5f,\n", history->quantite);
 			fprintf(file, "\t\t\t\t\t\"diff_begin\": %.2f,\n", history->diff_begin);
 			fprintf(file, "\t\t\t\t\t\"percent_begin\": %.2f\n", history->percent_begin);
 			if (j < asset->historique_count - 1)
@@ -73,8 +73,8 @@ int save_sales_history(FILE *file, const t_portfolio *portfolio)
 			fprintf(file, "\t\t{\n");
 			fprintf(file, "\t\t\t\"nom\": \"%s\",\n", sale->nom ? sale->nom : "null");
 			fprintf(file, "\t\t\t\"date\": \"%s\",\n", sale->date ? sale->date : "null");
-			fprintf(file, "\t\t\t\"quantite_vendue\": %.2f,\n", sale->quantite_vendue);
-			fprintf(file, "\t\t\t\"prix_vente\": %.2f,\n", sale->prix_vente);
+			fprintf(file, "\t\t\t\"quantite_vendue\": %.5f,\n", sale->quantite_vendue);
+			fprintf(file, "\t\t\t\"prix_vente\": %.5f,\n", sale->prix_vente);
 			fprintf(file, "\t\t\t\"percent_exit\": %.2f,\n", sale->percent_exit);
 			fprintf(file, "\t\t\t\"profit_loss_exit\": %.2f\n", sale->profit_loss_exit);
 			fprintf(file, "\t\t}");
@@ -160,11 +160,11 @@ int load_assets_history(FILE *file, t_portfolio *portfolio)
                 }
                 else if (sscanf(line, " \"prix_achat\": %f,", &asset->prix_achat) == 1)
                 {
-                    printf(RED "CHARGEMENT:" RESET " Prix d'achat : %.2f\n", asset->prix_achat);
+                    printf(RED "CHARGEMENT:" RESET " Prix d'achat : %.5f\n", asset->prix_achat);
                 }
                 else if (sscanf(line, " \"prix_moyen\": %f,", &asset->prix_moyen) == 1)
                 {
-                    printf(RED "CHARGEMENT:" RESET " Prix moyen : %.2f\n", asset->prix_moyen);
+                    printf(RED "CHARGEMENT:" RESET " Prix moyen : %.5f\n", asset->prix_moyen);
                 }
                 else if (strstr(line, "\"historique\": ["))
                 {
@@ -205,11 +205,11 @@ int load_assets_history(FILE *file, t_portfolio *portfolio)
                                 }
                                 else if (sscanf(line, " \"prix\": %f,", &history->prix) == 1)
                                 {
-                                    printf(RED "CHARGEMENT:" RESET " Prix historique : %.2f\n", history->prix);
+                                    printf(RED "CHARGEMENT:" RESET " Prix historique : %.5f\n", history->prix);
                                 }
                                 else if (sscanf(line, " \"quantite\": %f,", &history->quantite) == 1)
                                 {
-                                    printf(RED "CHARGEMENT:" RESET " Quantité historique : %.2f\n", history->quantite);
+                                    printf(RED "CHARGEMENT:" RESET " Quantité historique : %.5f\n", history->quantite);
                                 }
                             }
                             asset->historique_count++;
@@ -320,12 +320,12 @@ int load_sales_history(FILE *file, t_asset *asset)
                 else if (sscanf(line, " \"quantite_vendue\": %f,", &quantite_vendue) == 1)
                 {
                     sale->quantite_vendue = quantite_vendue;  // Stocker la quantité vendue
-                    printf(RED "CHARGEMENT:" RESET " Quantité vendue : %.2f\n", sale->quantite_vendue);
+                    printf(RED "CHARGEMENT:" RESET " Quantité vendue : %.5f\n", sale->quantite_vendue);
                 }
                 else if (sscanf(line, " \"prix_vente\": %f,", &prix_vente) == 1)
                 {
                     sale->prix_vente = prix_vente;  // Stocker le prix de vente
-                    printf(RED "CHARGEMENT:" RESET " Prix de vente : %.2f\n", sale->prix_vente);
+                    printf(RED "CHARGEMENT:" RESET " Prix de vente : %.5f\n", sale->prix_vente);
                 }
                 else if (sscanf(line, " \"percent_exit\": %f,", &percent_exit) == 1)
                 {

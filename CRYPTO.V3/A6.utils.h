@@ -6,7 +6,7 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 14:33:21 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/25 01:17:03 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/11/25 01:34:11 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,8 +64,6 @@ float 				input_amount();
 int 				input_date(char *date, size_t size);
 int 				input_choice(int min, int max);
 
-
-int		 			tput_cols();
 void				trim_whitespace(char *str);
 void 				log_message(const char *message);
 int 				compare_dates(const char *date1, const char *date2);

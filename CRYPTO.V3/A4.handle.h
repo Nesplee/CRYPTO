@@ -6,7 +6,7 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/21 01:10:32 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/25 01:15:58 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/11/25 03:48:36 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,9 @@ void	display_portfolio_short_summary(t_portfolio *portfolio);
 void	display_portfolio_long_summary(t_portfolio *portfolio);
 void	display_all_portfolios_short(t_portfolio_manager *manager);
 void	display_all_portfolios_long(t_portfolio_manager *manager);
+void 	display_current_portfolio_state(t_portfolio *portfolio);
+
+
 /*	============================== ET3 HANDLE ASSETS ==============================*/
 
 void 	handle_display_last_purchases(t_portfolio_manager *manager);

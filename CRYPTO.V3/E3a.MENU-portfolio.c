@@ -6,7 +6,7 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/21 01:28:06 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/22 16:39:55 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/11/25 03:50:14 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,6 +95,7 @@ void portfolio_vision_menu(t_portfolio_manager *manager)
 		// Options du sous-menu
 		print_centered("1. Afficher le portefeuille actif (court)", BLUE);
 		print_centered("2. Afficher le portefeuille actif (long)", BLUE);
+		print_centered("3. Afficher l'historique des mouvements", BLUE);
 		print_centered("3. Afficher tous les portefeuilles (court)", BLUE);
 		print_centered("4. Afficher tous les portefeuilles (long)", BLUE);
 		print_centered("0. Retour", GRAY);
@@ -110,6 +111,10 @@ void portfolio_vision_menu(t_portfolio_manager *manager)
 		if (choice == 1)
 		{
 			display_portfolio_short_summary(get_active_portfolio(manager));
+		}
+		else if (choice == 2)
+		{
+			display_current_portfolio_state(get_active_portfolio(manager));
 		}
 		else if (choice == 2)
 		{
