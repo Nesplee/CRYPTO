@@ -6,7 +6,7 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/21 01:33:20 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/24 05:15:07 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/11/25 00:19:17 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -239,41 +239,44 @@ void combine_and_display_movements(t_portfolio *portfolio)
 	print_centered("======= TOUS LES MOUVEMENTS =======", GRAY);
 
 	char header[256];
-	snprintf(header, sizeof(header), "%-15s %-15s %-15s %15s %10s %10s",
-			 "Date", "Type", "Nom", "Montant", "Prix", "PNL");
+	snprintf(header, sizeof(header), "%-15s %-15s %-15s %15s %15s %15s %10s",
+			 "Date", "Type", "Nom", "Quantité", "Prix", "Valeur", "PNL");
 	print_centered(header, GRAY);
 
-	print_centered("---------------------------------------------------------------------------------", GRAY);
+	print_centered("-----------------------------------------------------------------------------------------", GRAY);
 
 	// Parcourir et afficher les mouvements
 	for (int i = 0; i < total_count; i++)
 	{
 		char row[256];
 		char date_with_brackets[24];
-		char pnl_with_color[32]; // Temporaire pour PNL avec couleur
+		char pnl_with_color[32];    // Temporaire pour PNL avec couleur
+		char value_as_dollars[32];  // Temporaire pour la valeur en $
+		char price_with_color[32];  // Temporaire pour le prix
 
 		// Formatage de la date avec crochets
 		snprintf(date_with_brackets, sizeof(date_with_brackets),
 				 YELLOW "[%-10s]" RESET, movements[i].date);
 
-		// Formatage du PNL avec couleur
-		if (movements[i].pnl >= 0)
-		{
-			snprintf(pnl_with_color, sizeof(pnl_with_color), GREEN "%10.2f" RESET, movements[i].pnl);
-		}
-		else
-		{
-			snprintf(pnl_with_color, sizeof(pnl_with_color), RED "%10.2f" RESET, movements[i].pnl);
-		}
+		// Calculer la valeur en dollars
+		float value = movements[i].amount * movements[i].price;
+
+		// Formatage des champs avec couleurs
+		snprintf(value_as_dollars, sizeof(value_as_dollars), MAGENTA "%15.2f" RESET, value);
+		snprintf(price_with_color, sizeof(price_with_color), BLUE "%15.5f" RESET, movements[i].price);
+		snprintf(pnl_with_color, sizeof(pnl_with_color),
+				 movements[i].pnl >= 0 ? GREEN "%10.2f" RESET : RED "%10.2f" RESET,
+				 movements[i].pnl);
 
 		// Construire la ligne formatée avec alignement précis
-		snprintf(row, sizeof(row), "%-15s %-15s %-15s %15.2f %10.2f %10s",
+		snprintf(row, sizeof(row), "%-15s " RED "%-15s" RESET " " BLUE "%-15s" RESET YELLOW "%15.5f" RESET " %15s %15s %10s",
 				 date_with_brackets,
-				 movements[i].type,
-				 movements[i].nom ? movements[i].nom : "-",
-				 movements[i].amount,
-				 movements[i].price,
-				 pnl_with_color);
+				 movements[i].type,                       // Type en rouge
+				 movements[i].nom ? movements[i].nom : "-", // Nom en bleu
+				 movements[i].amount,                     // Quantité (5 décimales, en jaune)
+				 price_with_color,                        // Prix (5 décimales, en bleu)
+				 value_as_dollars,                        // Valeur (en magenta)
+				 pnl_with_color);                         // PNL (vert ou rouge)
 
 		// Afficher la ligne centrée
 		print_centered(row, NULL);

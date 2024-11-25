@@ -6,7 +6,7 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/21 01:10:32 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/25 00:00:16 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/11/25 01:15:58 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,14 +42,15 @@ void 	handle_update_asset(t_portfolio *portfolio);
 void 	handle_sell_asset(t_portfolio *portfolio);
 void 	handle_calculate_profit(t_portfolio *portfolio);
 void 	handle_simulate_asset_sale(t_portfolio *portfolio);
+void 	handle_modify_asset(t_portfolio *portfolio);
 
 
 /*	================================ FONCTION VALUE ================================*/
-float calculate_asset_value(t_asset *asset);
-float calculate_portfolio_value(t_portfolio *portfolio);
-void display_asset_percentages(t_portfolio *portfolio);
-int compare_assets_by_percentage(const void *a, const void *b);
-void sort_assets_by_percentage(t_portfolio *portfolio);
+float 	calculate_asset_value(t_asset *asset);
+float 	calculate_portfolio_value(t_portfolio *portfolio);
+void 	display_asset_percentages(t_portfolio *portfolio);
+int 	compare_assets_by_percentage(const void *a, const void *b);
+void	 sort_assets_by_percentage(t_portfolio *portfolio);
 
 
 #endif

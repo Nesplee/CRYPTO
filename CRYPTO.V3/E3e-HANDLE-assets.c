@@ -6,7 +6,7 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/21 02:01:33 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/24 17:52:08 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/11/25 00:47:07 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -253,7 +253,6 @@ int handle_add_asset(t_portfolio *portfolio)
 		pause_if_needed(1);
 		return 0;
 	}
-	print_centered("Actif ajouté avec succès!", GREEN);
 
 	return 1;
 }
@@ -519,7 +518,6 @@ void handle_simulate_asset_sale(t_portfolio *portfolio)
 	if (!portfolio || portfolio->asset_count == 0)
 	{
 		print_centered("Erreur : Aucun actif à simuler.", RED);
-		pause_if_needed(1);
 		return;
 	}
 
@@ -546,7 +544,6 @@ void handle_simulate_asset_sale(t_portfolio *portfolio)
 	if (!found)
 	{
 		print_centered("Erreur : Actif introuvable.", RED);
-		pause_if_needed(1);
 		return;
 	}
 
@@ -556,7 +553,6 @@ void handle_simulate_asset_sale(t_portfolio *portfolio)
 	if (asset->historique_count == 0)
 	{
 		print_centered("Erreur : Pas de données historiques pour cet actif.", RED);
-		pause_if_needed(1);
 		return;
 	}
 
@@ -566,7 +562,6 @@ void handle_simulate_asset_sale(t_portfolio *portfolio)
 	if (quantity_to_sell <= 0)
 	{
 		print_centered("Erreur : Quantité invalide.", RED);
-		pause_if_needed(1);
 		return;
 	}
 
@@ -574,7 +569,6 @@ void handle_simulate_asset_sale(t_portfolio *portfolio)
 	if (quantity_to_sell > asset->historique[asset->historique_count - 1].quantite)
 	{
 		print_centered("Erreur : Quantité à vendre supérieure à la quantité disponible.", RED);
-		pause_if_needed(1);
 		return;
 	}
 
@@ -584,7 +578,6 @@ void handle_simulate_asset_sale(t_portfolio *portfolio)
 	if (current_price <= 0)
 	{
 		print_centered("Erreur : Prix invalide.", RED);
-		pause_if_needed(1);
 		return;
 	}
 
@@ -606,5 +599,103 @@ void handle_simulate_asset_sale(t_portfolio *portfolio)
 		quantity_to_sell, current_price, potential_profit);
 	print_centered(result_message, GREEN);
 
-	pause_if_needed(1);
+}
+
+void handle_modify_asset(t_portfolio *portfolio)
+{
+	char asset_name[50];
+	t_asset *asset;
+	int found = 0;
+	int i = 0;
+
+	// Vérification si le portefeuille contient des actifs
+	if (!portfolio || portfolio->asset_count == 0)
+	{
+		print_centered("Erreur : Aucun actif à modifier.", RED);
+		return;
+	}
+
+	// Afficher les actifs disponibles
+	print_centered("Actifs disponibles pour modification :", LIGHT_BLUE);
+	display_assets(portfolio);
+
+	// Demander le nom de l’actif à modifier
+	input_name(asset_name, sizeof(asset_name));
+
+	// Rechercher l’actif
+	while (i < portfolio->asset_count && !found)
+	{
+		if (strcmp(portfolio->assets[i]->nom, asset_name) == 0)
+		{
+			found = 1;
+		}
+		else
+		{
+			i++;
+		}
+	}
+
+	if (!found)
+	{
+		print_centered("Erreur : Actif introuvable.", RED);
+		return;
+	}
+
+	asset = portfolio->assets[i];
+
+	// Modifier le nom de l'actif
+	if (ask_confirmation("Voulez-vous modifier le nom de l'actif ? (O/N)"))
+	{
+		char new_name[50];
+		print_centered("Entrez le nouveau nom :", LIGHT_BLUE);
+		input_name(new_name, sizeof(new_name));
+		if (is_snake_case(new_name))
+		{
+			free(asset->nom);
+			asset->nom = strdup(new_name);
+			print_centered("Nom de l'actif modifié avec succès.", GREEN);
+		}
+		else
+		{
+			print_centered("Erreur : Nom invalide. Le nom doit être en snake_case.", RED);
+		}
+	}
+
+	// Modifier la quantité de l'actif
+	if (ask_confirmation("Voulez-vous modifier la quantité de l'actif ? (O/N)"))
+	{
+		float delta_quantity;
+		print_centered("Entrez une quantité positive pour ajouter ou négative pour retirer :", LIGHT_BLUE);
+		delta_quantity = input_amount();
+
+		float new_quantity = asset->historique[asset->historique_count - 1].quantite + delta_quantity;
+		if (new_quantity < 0)
+		{
+			print_centered("Erreur : La quantité totale ne peut pas être négative.", RED);
+		}
+		else
+		{
+			asset->historique[asset->historique_count - 1].quantite = new_quantity;
+			print_centered("Quantité modifiée avec succès.", GREEN);
+		}
+	}
+
+	// Modifier la date d'ajout de l'actif
+	if (ask_confirmation("Voulez-vous modifier la date d'ajout de l'actif ? (O/N)"))
+	{
+		char new_date[12];
+		print_centered("Entrez la nouvelle date (YYYY-MM-DD) :", LIGHT_BLUE);
+		input_date(new_date, sizeof(new_date));
+		if (is_valid_date(new_date))
+		{
+			free(asset->historique[asset->historique_count - 1].date);
+			asset->historique[asset->historique_count - 1].date = strdup(new_date);
+			print_centered("Date modifiée avec succès.", GREEN);
+		}
+		else
+		{
+			print_centered("Erreur : Date invalide.", RED);
+		}
+	}
+
 }

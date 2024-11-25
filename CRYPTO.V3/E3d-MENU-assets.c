@@ -6,7 +6,7 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/21 01:59:24 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/24 02:47:37 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/11/25 00:44:42 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ void asset_action_menu(t_portfolio_manager *manager)
 			print_centered("Erreur : Aucun portefeuille actif.", RED);
 			print_centered("Créez un portefeuille avant de gérer les actifs.", GRAY);
 			pause_if_needed(1);
-			return; // Retourner immédiatement si aucun portefeuille n'est disponible
+			return;
 		}
 
 		// Demander à l'utilisateur de choisir un portefeuille
@@ -85,8 +85,8 @@ void asset_action_menu(t_portfolio_manager *manager)
 		if (!portfolio)
 		{
 			print_centered("Portefeuille introuvable. Veuillez réessayer.", RED);
-			pause_if_needed(1); // Attendre l'entrée de l'utilisateur ici
-			continue; // Recommence la boucle sans effacement supplémentaire
+			pause_if_needed(1);
+			continue;
 		}
 
 		// Afficher le résumé du portefeuille actif
@@ -107,36 +107,61 @@ void asset_action_menu(t_portfolio_manager *manager)
 		// Options du menu
 		print_centered("1. Acheter un actif", LIGHT_BLUE);
 		print_centered("2. Mettre à jour un actif", LIGHT_BLUE);
-		print_centered("3. Vendre un actif", LIGHT_BLUE);
-		print_centered("4. Calculer entre deux dates", LIGHT_BLUE);
-		print_centered("5. Simuler une vente", LIGHT_BLUE);
+		print_centered("3. Modifier un actif", LIGHT_BLUE);
+		print_centered("4. Vendre un actif", LIGHT_BLUE);
+		print_centered("5. Calculer entre deux dates", LIGHT_BLUE);
+		print_centered("6. Simuler une vente", LIGHT_BLUE);
 		print_centered("0. Retour", GRAY);
 
 		// Lecture du choix utilisateur
-		int choice = input_choice(0, 5);
+		int choice = input_choice(0, 6);
 
 		if (choice == -1)
 		{
 			print_centered("Réessayez.", RED);
 		}
-		else if (choice == 1)
+		else if (choice == 1 || choice == 2 || choice == 4) // Répétition pour achat, mise à jour et vente
 		{
-			if (!handle_add_asset(portfolio))
-				print_centered("Erreur lors de l'achat d'actif.", RED);
-		}
-		else if (choice == 2)
-		{
-			handle_update_asset(portfolio);
+			int repeat = 1; // Variable pour gérer la répétition
+			while (repeat)
+			{
+				clear_screen();
+				if (choice == 1)
+				{
+					if (!handle_add_asset(portfolio))
+					{
+						print_centered("Erreur lors de l'achat d'actif.", RED);
+					}
+					else
+					{
+						print_centered("Actif ajouté avec succès.", GREEN);
+					}
+				}
+				else if (choice == 2)
+				{
+					handle_update_asset(portfolio);
+				}
+				else if (choice == 4)
+				{
+					handle_sell_asset(portfolio);
+				}
+
+				// Demander si l'utilisateur veut effectuer une autre opération similaire
+				if (!ask_confirmation("Voulez-vous effectuer une autre opération du même type ? (O/N)"))
+				{
+					repeat = 0; // Sortir de la boucle
+				}
+			}
 		}
 		else if (choice == 3)
 		{
-			handle_sell_asset(portfolio);
+			handle_modify_asset(portfolio);
 		}
-		else if (choice == 4)
+		else if (choice == 5)
 		{
 			handle_calculate_profit(portfolio);
 		}
-		else if (choice == 5)
+		else if (choice == 6)
 		{
 			handle_simulate_asset_sale(portfolio);
 		}

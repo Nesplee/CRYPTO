@@ -6,7 +6,7 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/21 02:00:55 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/23 19:50:20 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/11/25 01:12:06 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,239 +128,195 @@ t_asset	*create_asset(t_portfolio *portfolio, char *nom, char *date, float prix_
 
 void update_position(t_asset *asset, float nouveau_prix, float nouvelle_quantite, char *nouvelle_date)
 {
-	float cout_total_ancien;
-	float cout_total_nouveau;
-	float quantite_totale;
+    // Vérification des paramètres
+    if (!asset || !nouvelle_date)
+    {
+        print_centered("Erreur : Paramètres invalides.", RED);
+        return;
+    }
 
-	// Vérification des paramètres
-	if (!asset || !nouvelle_date)
-	{
-		printf(RED "Erreur:" RESET " Paramètres invalides.\n");
-		return;
-	}
+    if (nouvelle_quantite <= 0)
+    {
+        print_centered("Erreur : La nouvelle quantité doit être supérieure à 0.", RED);
+        return;
+    }
 
-	if (nouvelle_quantite <= 0)
-	{
-		printf(RED "Erreur:" RESET " La nouvelle quantité doit être supérieure à 0.\n");
-		return;
-	}
+    // Redimensionnement de l'historique si nécessaire
+    if (asset->historique_count >= asset->max_historique)
+    {
+        if (!resize_history(asset))
+        {
+            print_centered("Erreur : Impossible de redimensionner les tableaux de l'historique.", RED);
+            return;
+        }
+    }
 
-	// Redimensionnement de l'historique si nécessaire
-	if (asset->historique_count >= asset->max_historique)
-	{
-		if (!resize_history(asset))
-		{
-			printf(RED "Erreur:" RESET " Impossible de redimensionner les tableaux de l'historique.\n");
-			return;
-		}
-	}
+    // Calcul des nouveaux coûts et quantités
+    float cout_total_ancien = asset->prix_moyen * asset->historique[asset->historique_count - 1].quantite;
+    float cout_total_nouveau = nouveau_prix * nouvelle_quantite;
+    float quantite_totale = asset->historique[asset->historique_count - 1].quantite + nouvelle_quantite;
 
-	// Calcul des nouveaux coûts et quantités
-	cout_total_ancien = asset->prix_moyen * asset->historique[asset->historique_count - 1].quantite;
-	cout_total_nouveau = nouveau_prix * nouvelle_quantite;
-	quantite_totale = asset->historique[asset->historique_count - 1].quantite + nouvelle_quantite;
+    if (quantite_totale > 0)
+    {
+        asset->prix_moyen = (cout_total_ancien + cout_total_nouveau) / quantite_totale;
+    }
+    else
+    {
+        asset->prix_moyen = 0;
+    }
 
-	if (quantite_totale > 0)
-	{
-		asset->prix_moyen = (cout_total_ancien + cout_total_nouveau) / quantite_totale;
-	}
-	else
-	{
-		asset->prix_moyen = 0;
-	}
+    // Ajouter une nouvelle entrée dans l'historique
+    t_history *nouvelle_entree = &asset->historique[asset->historique_count];
+    nouvelle_entree->date = ft_strdup(nouvelle_date);
+    if (!nouvelle_entree->date)
+    {
+        print_centered("Erreur : Allocation échouée pour la nouvelle date.", RED);
+        return;
+    }
 
-	// Ajouter une nouvelle entrée dans l'historique
-	t_history *nouvelle_entree = &asset->historique[asset->historique_count];
-	nouvelle_entree->date = ft_strdup(nouvelle_date);
-	if (!nouvelle_entree->date)
-	{
-		printf(RED "Erreur:" RESET " Allocation échouée pour la nouvelle date.\n");
-		return;
-	}
+    nouvelle_entree->prix = nouveau_prix;
+    nouvelle_entree->quantite = quantite_totale;
+    nouvelle_entree->diff_begin = (nouveau_prix - asset->prix_achat) * quantite_totale;
 
-	nouvelle_entree->prix = nouveau_prix;
-	nouvelle_entree->quantite = quantite_totale;
-	nouvelle_entree->diff_begin = (nouveau_prix - asset->prix_achat) * quantite_totale;
+    if (asset->prix_achat > 0)
+    {
+        nouvelle_entree->percent_begin =
+            (nouvelle_entree->diff_begin / (asset->prix_achat * quantite_totale)) * 100;
+    }
+    else
+    {
+        nouvelle_entree->percent_begin = 0;
+    }
 
-	if (asset->prix_achat > 0)
-	{
-		nouvelle_entree->percent_begin =
-			(nouvelle_entree->diff_begin / (asset->prix_achat * quantite_totale)) * 100;
-	}
-	else
-	{
-		nouvelle_entree->percent_begin = 0;
-	}
-
-	// Incrémenter le compteur de l'historique
-	asset->historique_count++;
+    // Incrémenter le compteur de l'historique
+    asset->historique_count++;
 }
-
 
 void update_current_price(t_asset *asset, float update_prix, char *date_suivi)
 {
-	float dernier_prix;
-	float diff_since_last;
-	float percent_since_last;
+    if (!asset || !date_suivi || update_prix <= 0)
+    {
+        print_centered("Erreur : Paramètres invalides.", RED);
+        return;
+    }
 
-	// Vérification des paramètres
-	if (!asset || !date_suivi || update_prix <= 0)
-	{
-		printf(RED "Erreur:" RESET " Paramètres invalides.\n");
-		return;
-	}
+    // Redimensionnement de l'historique si nécessaire
+    if (asset->historique_count >= asset->max_historique)
+    {
+        if (!resize_history(asset))
+        {
+            print_centered("Erreur : Impossible de redimensionner les tableaux de l'historique.", RED);
+            return;
+        }
+    }
 
-	// Redimensionnement de l'historique si nécessaire
-	if (asset->historique_count >= asset->max_historique)
-	{
-		if (!resize_history(asset))
-		{
-			printf(RED "Erreur:" RESET " Impossible de redimensionner les tableaux de l'historique.\n");
-			return;
-		}
-	}
+    float dernier_prix = asset->historique[asset->historique_count - 1].prix;
+    float diff_since_last = update_prix - dernier_prix;
+    float percent_since_last = (dernier_prix != 0) ? (diff_since_last / dernier_prix) * 100 : 0;
 
-	// Récupération du dernier prix
-	dernier_prix = asset->historique[asset->historique_count - 1].prix;
-	diff_since_last = update_prix - dernier_prix;
-	if (dernier_prix != 0)
-	{
-		percent_since_last = (diff_since_last / dernier_prix) * 100;
-	}
-	else
-	{
-		percent_since_last = 0;
-	}
+    // Ajouter une nouvelle entrée dans l'historique
+    t_history *nouvelle_entree = &asset->historique[asset->historique_count];
+    nouvelle_entree->date = ft_strdup(date_suivi);
+    if (!nouvelle_entree->date)
+    {
+        print_centered("Erreur : Allocation échouée pour la date.", RED);
+        return;
+    }
 
-	// Ajouter une nouvelle entrée dans l'historique
-	t_history *nouvelle_entree = &asset->historique[asset->historique_count];
-	nouvelle_entree->date = ft_strdup(date_suivi);
-	if (!nouvelle_entree->date)
-	{
-		printf(RED "Erreur:" RESET " Allocation échouée pour la date.\n");
-		return;
-	}
+    nouvelle_entree->prix = update_prix;
+    nouvelle_entree->quantite = asset->historique[asset->historique_count - 1].quantite;
+    nouvelle_entree->diff_begin = update_prix - asset->prix_achat;
 
-	nouvelle_entree->prix = update_prix;
-	nouvelle_entree->quantite = asset->historique[asset->historique_count - 1].quantite;
-	nouvelle_entree->diff_begin = update_prix - asset->prix_achat;
+    if (asset->prix_achat != 0)
+    {
+        nouvelle_entree->percent_begin = (nouvelle_entree->diff_begin / asset->prix_achat) * 100;
+    }
+    else
+    {
+        nouvelle_entree->percent_begin = 0;
+    }
 
-	if (asset->prix_achat != 0)
-	{
-		nouvelle_entree->percent_begin =
-			(nouvelle_entree->diff_begin / asset->prix_achat) * 100;
-	}
-	else
-	{
-		nouvelle_entree->percent_begin = 0;
-	}
+    asset->historique_count++;
 
-	// Incrémenter le compteur de l'historique
-	asset->historique_count++;
-
-	printf("Pourcentage de progression depuis la dernière MAJ: %.2f%%\n", percent_since_last);
+    // Afficher le pourcentage de progression
+    char progress_message[100];
+    snprintf(progress_message, sizeof(progress_message), "Pourcentage de progression depuis la dernière MAJ: %.2f%%", percent_since_last);
+    print_centered(progress_message, RED);
 }
 
 void calculate_profit(t_asset *asset, int start_index, int end_index)
 {
-	float start_price;
-	float end_price;
-	float quantity;
-	float diff;
-	float percent;
+    if (!asset || start_index < 0 || end_index < 0 || start_index >= end_index || end_index >= asset->historique_count)
+    {
+        print_centered("Erreur : Indices ou actif invalides.", RED);
+        return;
+    }
 
-	// Vérification des paramètres
-	if (!asset || start_index < 0 || end_index < 0 || start_index >= end_index || end_index >= asset->historique_count)
-	{
-		printf(RED "Erreur:" RESET " Indices ou actif invalides.\n");
-		return;
-	}
+    float start_price = asset->historique[start_index].prix;
+    float end_price = asset->historique[end_index].prix;
+    float quantity = asset->historique[end_index].quantite;
+    float diff = (end_price - start_price) * quantity;
+    float percent = (start_price * quantity != 0) ? (diff / (start_price * quantity)) * 100 : 0;
 
-	// Récupération des valeurs historiques
-	start_price = asset->historique[start_index].prix;
-	end_price = asset->historique[end_index].prix;
-	quantity = asset->historique[end_index].quantite;
-	diff = (end_price - start_price) * quantity;
+    // Affichage des résultats
+    char profit_message[256];
+    snprintf(profit_message, sizeof(profit_message),
+             "Profit/Déficit entre [%s] et [%s]:",
+             asset->historique[start_index].date, asset->historique[end_index].date);
+    print_centered(profit_message, GRAY);
 
-	// Calcul du pourcentage de différence
-	if (start_price * quantity != 0)
-	{
-		percent = (diff / (start_price * quantity)) * 100;
-	}
-	else
-	{
-		percent = 0;
-	}
-
-	// Affichage des résultats
-	printf("Profit/Déficit entre " YELLOW "[%s]" RESET " et " YELLOW "[%s]:" RESET "\n",
-		   asset->historique[start_index].date, asset->historique[end_index].date);
-
-	if (diff >= 0)
-	{
-		printf(GREEN "Différence de valeur: +%.2f $\nPourcentage: +%.2f%%\n" RESET, diff, percent);
-	}
-	else
-	{
-		printf(RED "Différence de valeur: %.2f $\nPourcentage: %.2f%%\n" RESET, diff, percent);
-	}
+    if (diff >= 0)
+    {
+        snprintf(profit_message, sizeof(profit_message), "Différence de valeur: +%.2f $, Pourcentage: +%.2f%%", diff, percent);
+        print_centered(profit_message, GREEN);
+    }
+    else
+    {
+        snprintf(profit_message, sizeof(profit_message), "Différence de valeur: %.2f $, Pourcentage: %.2f%%", diff, percent);
+        print_centered(profit_message, RED);
+    }
 }
+
 void archive_sale(t_asset *asset, t_portfolio *portfolio, float quantity, float sale_price, char *sale_date)
 {
-	t_sale *sale;
+    if (!asset || !portfolio || !sale_date || quantity <= 0 || sale_price <= 0)
+    {
+        print_centered("Erreur : Paramètres invalides pour la vente.", RED);
+        return;
+    }
 
-	// Vérification des paramètres
-	if (!asset || !portfolio || !sale_date || quantity <= 0 || sale_price <= 0)
-	{
-		printf(RED "Erreur:" RESET " Paramètres invalides pour la vente.\n");
-		return;
-	}
+    if (quantity > asset->historique[asset->historique_count - 1].quantite)
+    {
+        print_centered("Erreur : Quantité de vente supérieure à la quantité disponible.", RED);
+        return;
+    }
 
-	if (quantity > asset->historique[asset->historique_count - 1].quantite)
-	{
-		printf(RED "Erreur:" RESET " Quantité de vente supérieure à la quantité disponible.\n");
-		return;
-	}
+    if (asset->sale_count >= asset->max_sales)
+    {
+        if (!resize_sales(asset))
+        {
+            print_centered("Erreur : Impossible d'enregistrer la vente.", RED);
+            return;
+        }
+    }
 
-	// Redimensionnement du tableau des ventes si nécessaire
-	if (asset->sale_count >= asset->max_sales)
-	{
-		if (!resize_sales(asset))
-		{
-			printf(RED "Erreur:" RESET " Impossible d'enregistrer la vente.\n");
-			return;
-		}
-	}
+    t_sale *sale = &asset->sales[asset->sale_count];
+    sale->nom = ft_strdup(asset->nom);
+    sale->date = ft_strdup(sale_date);
+    sale->quantite_vendue = quantity;
+    sale->prix_vente = sale_price;
+    sale->profit_loss_exit = (sale_price - asset->prix_moyen) * quantity;
 
-	// Initialiser la vente
-	sale = &asset->sales[asset->sale_count];
-	sale->nom = ft_strdup(asset->nom);
-	sale->date = ft_strdup(sale_date);
-	sale->quantite_vendue = quantity;
-	sale->prix_vente = sale_price;
-	sale->profit_loss_exit = (sale_price - asset->prix_moyen) * quantity;
+    sale->percent_exit = (asset->prix_moyen != 0) ? ((sale_price - asset->prix_moyen) / asset->prix_moyen) * 100 : 0;
 
-	if (asset->prix_moyen != 0)
-	{
-		sale->percent_exit = ((sale_price - asset->prix_moyen) / asset->prix_moyen) * 100;
-	}
-	else
-	{
-		sale->percent_exit = 0;
-	}
+    portfolio->dollar_balance += quantity * sale_price;
+    asset->historique[asset->historique_count - 1].quantite -= quantity;
 
-	// Mettre à jour le solde du portefeuille
-	portfolio->dollar_balance += quantity * sale_price;
+    if (asset->historique[asset->historique_count - 1].quantite <= 0)
+    {
+        asset->is_sold_out = 1;
+        asset->historique[asset->historique_count - 1].quantite = 0;
+    }
 
-	// Mettre à jour l'historique des quantités
-	asset->historique[asset->historique_count - 1].quantite -= quantity;
-
-	if (asset->historique[asset->historique_count - 1].quantite <= 0)
-	{
-		asset->is_sold_out = 1;
-		asset->historique[asset->historique_count - 1].quantite = 0;
-	}
-
-	// Incrémenter le compteur de ventes
-	asset->sale_count++;
+    asset->sale_count++;
 }

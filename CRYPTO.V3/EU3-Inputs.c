@@ -6,7 +6,7 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/21 00:35:15 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/24 17:09:28 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/11/25 01:15:42 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -192,3 +192,4 @@ int	input_choice(int min, int max)
 
 	return (choice);
 }
+

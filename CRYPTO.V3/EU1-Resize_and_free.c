@@ -6,7 +6,7 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:11:34 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/24 05:01:45 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/11/25 00:54:15 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -310,23 +310,18 @@ int resize_arrays(t_asset *asset)
 
 int resize_transactions(t_portfolio *portfolio)
 {
-    int new_size;
-    t_transaction *new_transactions;
+	if (!portfolio || !portfolio->transactions)
+		return 0;
 
-    if (!portfolio)
-    {
-        return 0;
-    }
+	int new_max = portfolio->max_transactions * 2;
+	t_transaction *new_transactions = realloc(portfolio->transactions, new_max * sizeof(t_transaction));
+	if (!new_transactions)
+	{
+		print_centered("Erreur : Réallocation échouée.", RED);
+		return 0;
+	}
 
-    new_size = portfolio->max_transactions * 2;
-    new_transactions = (t_transaction *)realloc(portfolio->transactions, sizeof(t_transaction) * new_size);
-    if (!new_transactions)
-    {
-        return 0;
-    }
-
-    portfolio->transactions = new_transactions;
-    portfolio->max_transactions = new_size;
-
-    return 1;
+	portfolio->transactions = new_transactions;
+	portfolio->max_transactions = new_max;
+	return 1;
 }

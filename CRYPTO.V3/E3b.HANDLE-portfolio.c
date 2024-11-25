@@ -6,7 +6,7 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/21 01:31:13 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/25 00:07:35 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/11/25 00:53:52 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,46 +14,59 @@
 
 void handle_add_dollars(t_portfolio *portfolio, float amount, char *date)
 {
-	// Vérification des paramètres de la fonction
-	if (!portfolio)
+	// Vérification des paramètres
+	if (!portfolio || !date)
 	{
 		print_centered("Erreur : Paramètres invalides.", RED);
 		return;
 	}
 
-	// Vérifier si le portefeuille a atteint la limite de transactions
+	// Initialiser les transactions si elles n'ont jamais été allouées
+	if (!portfolio->transactions)
+	{
+		portfolio->max_transactions = 10; // Taille initiale
+		portfolio->transactions = malloc(portfolio->max_transactions * sizeof(t_transaction));
+		if (!portfolio->transactions)
+		{
+			print_centered("Erreur : Impossible d'allouer le tableau des transactions.", RED);
+			return;
+		}
+		portfolio->transaction_count = 0;
+	}
+
+	// Redimensionner le tableau si nécessaire
 	if (portfolio->transaction_count >= portfolio->max_transactions)
 	{
 		if (!resize_transactions(portfolio))
 		{
-			print_centered("Erreur: Impossible de redimensionner les transactions.", RED);
+			print_centered("Erreur : Impossible de redimensionner le tableau des transactions.", RED);
 			return;
 		}
 	}
 
 	// Ajouter la transaction
 	t_transaction *transaction = &portfolio->transactions[portfolio->transaction_count];
-	transaction->date = ft_strdup(date);
+	transaction->date = strdup(date);
 	if (!transaction->date)
 	{
-		print_centered("Erreur: Allocation mémoire échouée pour la date.", RED);
+		print_centered("Erreur : Allocation mémoire échouée pour la date.", RED);
 		return;
 	}
 	transaction->amount = amount;
 
-	// Mise à jour du solde
+	// Mettre à jour le solde
 	portfolio->dollar_balance += amount;
 	portfolio->transaction_count++;
 
-	// Afficher le message de confirmation
+	// Afficher un message de confirmation
 	char message[100];
-	snprintf(message, sizeof(message), "Dollars ajoutés: %.2f. Nouveau solde: %.2f.", amount, portfolio->dollar_balance);
+	snprintf(message, sizeof(message), "Dollars ajoutés : %.2f. Nouveau solde : %.2f.", amount, portfolio->dollar_balance);
 	print_centered(message, GREEN);
 
-	// Demander confirmation après le traitement
+	// Confirmer l'ajout
 	if (!ask_confirmation("Confirmer l'ajout des dollars ? (O/N)"))
 	{
-		// Annuler si non confirmé (hypothèse : la transaction est réversible)
+		// Annuler si non confirmé
 		portfolio->dollar_balance -= amount;
 		portfolio->transaction_count--;
 		print_centered("Ajout annulé par l'utilisateur.", RED);
@@ -62,9 +75,8 @@ void handle_add_dollars(t_portfolio *portfolio, float amount, char *date)
 	{
 		print_centered("Ajout confirmé.", GREEN);
 	}
-
-	// **Supprimer pause_if_needed ici pour éviter redondance**
 }
+
 
 void handle_withdraw_dollars(t_portfolio *portfolio, float amount, char *date)
 {
