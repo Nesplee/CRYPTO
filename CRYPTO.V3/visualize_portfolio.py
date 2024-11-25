@@ -6,7 +6,7 @@
 #    By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/11/25 01:46:44 by dinguyen          #+#    #+#              #
-#    Updated: 2024/11/25 02:14:10 by dinguyen         ###   ########.fr        #
+#    Updated: 2024/11/25 05:21:38 by dinguyen         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 # Charger les données JSON
-with open("DIM.txt", "r") as file:
+with open("MAIN.txt", "r") as file:
     portfolio_data = json.load(file)
 
 def prepare_data(data):
