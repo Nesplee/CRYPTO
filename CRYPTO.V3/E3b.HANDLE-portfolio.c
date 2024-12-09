@@ -6,7 +6,7 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/21 01:31:13 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/25 04:09:23 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/12/09 16:09:27 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,69 +14,66 @@
 
 void handle_add_dollars(t_portfolio *portfolio, float amount, char *date)
 {
-	// Vérification des paramètres
-	if (!portfolio || !date)
-	{
-		print_centered("Erreur : Paramètres invalides.", RED);
-		return;
-	}
+		// Vérification des paramètres
+		if (!portfolio || !date)
+		{
+			print_centered("Erreur : Paramètres invalides.", RED);
+			return;
+		}
 
-	// Initialiser les transactions si elles n'ont jamais été allouées
-	if (!portfolio->transactions)
-	{
-		portfolio->max_transactions = 10; // Taille initiale
-		portfolio->transactions = malloc(portfolio->max_transactions * sizeof(t_transaction));
+		// Initialiser les transactions si elles n'ont jamais été allouées
 		if (!portfolio->transactions)
 		{
-			print_centered("Erreur : Impossible d'allouer le tableau des transactions.", RED);
-			return;
+			portfolio->max_transactions = 10; // Taille initiale
+			portfolio->transactions = malloc(portfolio->max_transactions * sizeof(t_transaction));
+			if (!portfolio->transactions)
+			{
+				print_centered("Erreur : Impossible d'allouer le tableau des transactions.", RED);
+				return;
+			}
+			portfolio->transaction_count = 0;
+			portfolio->dollar_balance = 0; // Réinitialisation du solde
 		}
-		portfolio->transaction_count = 0;
-	}
 
-	// Redimensionner le tableau si nécessaire
-	if (portfolio->transaction_count >= portfolio->max_transactions)
-	{
-		if (!resize_transactions(portfolio))
+		// Redimensionner le tableau si nécessaire
+		if (portfolio->transaction_count >= portfolio->max_transactions)
 		{
-			print_centered("Erreur : Impossible de redimensionner le tableau des transactions.", RED);
+			if (!resize_transactions(portfolio))
+			{
+				print_centered("Erreur : Impossible de redimensionner le tableau des transactions.", RED);
+				return;
+			}
+		}
+
+		// Ajouter la transaction
+		t_transaction *transaction = &portfolio->transactions[portfolio->transaction_count];
+		transaction->date = strdup(date);
+		if (!transaction->date)
+		{
+			print_centered("Erreur : Allocation mémoire échouée pour la date.", RED);
 			return;
 		}
-	}
+		transaction->amount = amount;
 
-	// Ajouter la transaction
-	t_transaction *transaction = &portfolio->transactions[portfolio->transaction_count];
-	transaction->date = strdup(date);
-	if (!transaction->date)
-	{
-		print_centered("Erreur : Allocation mémoire échouée pour la date.", RED);
-		return;
-	}
-	transaction->amount = amount;
+		// Afficher un message de confirmation
+		char message[100];
+		snprintf(message, sizeof(message), "Dollars ajoutés : %.2f. Nouveau solde : %.2f.", amount, portfolio->dollar_balance + amount);
+		print_centered(message, GREEN);
 
-	// Mettre à jour le solde
-	portfolio->dollar_balance += amount;
-	portfolio->transaction_count++;
+		// Confirmer l'ajout
+		if (!ask_confirmation("Confirmer l'ajout des dollars ? (O/N)"))
+		{
+			// Annuler si non confirmé
+			free(transaction->date);
+			print_centered("Ajout annulé par l'utilisateur.", RED);
+			return;
+		}
 
-	// Afficher un message de confirmation
-	char message[100];
-	snprintf(message, sizeof(message), "Dollars ajoutés : %.2f. Nouveau solde : %.2f.", amount, portfolio->dollar_balance);
-	print_centered(message, GREEN);
-
-	// Confirmer l'ajout
-	if (!ask_confirmation("Confirmer l'ajout des dollars ? (O/N)"))
-	{
-		// Annuler si non confirmé
-		portfolio->dollar_balance -= amount;
-		portfolio->transaction_count--;
-		print_centered("Ajout annulé par l'utilisateur.", RED);
-	}
-	else
-	{
+		// Mettre à jour le solde uniquement après confirmation
+		portfolio->dollar_balance += amount;
+		portfolio->transaction_count++;
 		print_centered("Ajout confirmé.", GREEN);
-	}
 }
-
 
 void handle_withdraw_dollars(t_portfolio *portfolio, float amount, char *date)
 {
@@ -223,7 +220,12 @@ void display_current_portfolio_state(t_portfolio *portfolio)
 			 col_width, "Valeur", col_width, "PNL");
 	print_centered(header, GRAY);
 
-	print_centered("-------------------------------------------------------------------------------", GRAY);
+	print_centered("-----------------------------------------------------------------------      ", GRAY);
+
+	// Variables pour calculer les totaux
+	float total_invested = 0.0f;
+	float total_value = 0.0f;
+	float total_pnl = 0.0f;
 
 	// Parcourir les actifs et afficher leurs informations
 	for (int i = 0; i < portfolio->asset_count; i++)
@@ -237,6 +239,11 @@ void display_current_portfolio_state(t_portfolio *portfolio)
 		float quantity = asset->historique[asset->historique_count - 1].quantite;
 		float valeur = last_price * quantity;
 		float pnl = (last_price - asset->prix_moyen) * quantity;
+
+		// Ajouter aux totaux
+		total_invested += asset->prix_moyen * quantity;
+		total_value += valeur;
+		total_pnl += pnl;
 
 		// Formater les données avec couleurs
 		char row[512];
@@ -254,14 +261,26 @@ void display_current_portfolio_state(t_portfolio *portfolio)
 	}
 
 	// Ligne de séparation
-	print_centered("-------------------------------------------------------------------------------", GRAY);
+	print_centered("-----------------------------------------------------------------------      ", GRAY);
+
+	// Ajouter le récapitulatif du portefeuille
+	char summary[512];
+	snprintf(summary, sizeof(summary),
+			 LIGHT_BLUE "%-*s" RESET " " GREEN "$%-*.2f" RESET " " MAGENTA "$%-*.2f" RESET " %s$%-*.2f" RESET,
+			 col_width, portfolio->name,               // Nom du portefeuille
+			 col_width, total_invested,                // Montant investi (VERT)
+			 col_width, total_value,                   // Valeur actuelle (MAGENTA)
+			 total_pnl >= 0 ? GREEN : RED,             // Couleur pour le PNL courant
+			 col_width, total_pnl);                    // PNL courant
+
+	print_centered(summary, NULL);
 
 	// Ajouter l'historique des transactions
 	print_centered("======= HISTORIQUE DES TRANSACTIONS =======", GRAY);
 	display_transactions(portfolio);
 
 	// Ajouter l'historique des ventes
-	print_centered("======= HISTORIQUE DES VENTES =======", GRAY);
+	print_centered("========== HISTORIQUE DES VENTES ==========", GRAY);
 	display_all_sales(portfolio);
 
 	print_centered("===========================================", GRAY);

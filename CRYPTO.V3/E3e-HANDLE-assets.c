@@ -6,7 +6,7 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/21 02:01:33 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/25 00:47:07 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/12/09 20:58:22 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -358,92 +358,124 @@ void handle_update_asset(t_portfolio *portfolio)
 
 void handle_sell_asset(t_portfolio *portfolio)
 {
-	char nom[15], date[12];
-	float quantite, prix, montant_vente;
-	t_asset *asset;
+    char nom[15], date[12];
+    float quantite = 0.0f, prix = 0.0f, montant_vente = 0.0f;
+    t_asset *asset = NULL;
 
-	// Vérification de la validité du portefeuille
-	if (!portfolio || portfolio->asset_count == 0)
-	{
-		print_centered("Erreur : Aucun actif disponible pour la vente.", RED);
-		return;
-	}
+    // Vérification de la validité du portefeuille
+    if (!portfolio || portfolio->asset_count == 0)
+    {
+        print_centered("Erreur : Aucun actif disponible pour la vente.", RED);
+        return;
+    }
 
-	// Saisie du nom de l'actif
-	input_name(nom, sizeof(nom));
-	if (!is_snake_case(nom))
-	{
-		print_centered("Erreur: Nom invalide. Doit être en snake_case.", RED);
-		return;
-	}
+    // Affichage des actifs disponibles
+    print_centered("ACTIFS DISPONIBLES :", LIGHT_BLUE);
+    display_assets(portfolio); // Fonction à implémenter pour afficher les actifs
 
-	// Recherche de l'actif
-	asset = find_asset_by_name(portfolio, nom);
-	if (!asset)
-	{
-		print_centered("Erreur: Actif non trouvé.", RED);
-		return;
-	}
+    // Saisie du nom de l'actif
+    input_name(nom, sizeof(nom));
+    if (!is_snake_case(nom))
+    {
+        print_centered("Erreur: Nom invalide. Doit être en snake_case.", RED);
+        return;
+    }
 
-	// Saisie de la quantité à vendre
-	print_centered("QUANTITE A VENDRE", LIGHT_BLUE);
-	quantite = input_amount();
+    // Recherche de l'actif
+    asset = find_asset_by_name(portfolio, nom);
+    if (!asset)
+    {
+        print_centered("Erreur: Actif non trouvé.", RED);
+        return;
+    }
 
-	if (quantite > asset->historique[asset->historique_count - 1].quantite)
-	{
-		char error_message[100];
-		snprintf(error_message, sizeof(error_message),
-				 "Erreur: Quantité demandée (%.5f) dépasse la quantité disponible (%.5f).",
-				 quantite, asset->historique[asset->historique_count - 1].quantite);
-		print_centered(error_message, RED);
-		return;
-	}
+    // Affichage de la quantité totale disponible
+    char total_quantity_message[100];
+    snprintf(total_quantity_message, sizeof(total_quantity_message),
+             "Quantité totale disponible pour '%s' : %.5f", nom, asset->historique[asset->historique_count - 1].quantite);
+    print_centered(total_quantity_message, LIGHT_BLUE);
 
-	// Saisie du prix de vente
-	print_centered("PRIX DE VENTE", LIGHT_BLUE);
-	prix = input_amount();
+    // Saisie de la quantité à vendre
+    print_centered("QUANTITE A VENDRE", LIGHT_BLUE);
+    quantite = input_amount();
 
-	// Saisie de la date de vente
-	input_date(date, sizeof(date));
+    if (quantite > asset->historique[asset->historique_count - 1].quantite)
+    {
+        char error_message[100];
+        snprintf(error_message, sizeof(error_message),
+                 "Erreur: Quantité demandée (%.5f) dépasse la quantité disponible (%.5f).",
+                 quantite, asset->historique[asset->historique_count - 1].quantite);
+        print_centered(error_message, RED);
+        return;
+    }
 
-	// Calcul du montant total de la vente
-	montant_vente = quantite * prix;
+    // Saisie du prix de vente
+    print_centered("PRIX DE VENTE", LIGHT_BLUE);
+    prix = input_amount();
 
-	// Demander confirmation avant de vendre
-	char confirm_message[200];
-	snprintf(confirm_message, sizeof(confirm_message),
-			 GRAY "Confirmer la vente de %.5f unités de '%s' au prix de %.5f le %s ? (O/N) : " RESET,
-			 quantite, nom, prix, date);
-	if (!ask_confirmation(confirm_message))
-	{
-		print_centered("Vente annulée.", RED);
-		return;  // Annuler la vente si l'utilisateur refuse
-	}
+    // Saisie de la date de vente
+    input_date(date, sizeof(date));
 
-	// Archivage de la vente
-	archive_sale(asset, portfolio, quantite, prix, date);
+    // Calcul du montant total de la vente
+    montant_vente = quantite * prix;
 
-	// Libération des actifs vendus
-	free_sold_assets(portfolio);
+    // Demander confirmation avant de vendre
+    char confirm_message[200];
+    snprintf(confirm_message, sizeof(confirm_message),
+             GRAY "Confirmer la vente de %.5f unités de '%s' au prix de %.5f le %s ? (O/N) : " RESET,
+             quantite, nom, prix, date);
+    if (!ask_confirmation(confirm_message))
+    {
+        print_centered("Vente annulée.", RED);
+        return; // Annuler la vente si l'utilisateur refuse
+    }
 
-	// Demander à l'utilisateur s'il veut ajouter le montant de la vente au solde en dollars
-	char add_to_balance_message[200];
-	snprintf(add_to_balance_message, sizeof(add_to_balance_message),
-			 GRAY "Souhaitez-vous ajouter le montant de %.2f $ à votre solde en dollars ? (O/N) : " RESET,
-			 montant_vente);
-	if (ask_confirmation(add_to_balance_message))
-	{
-		// Appeler la fonction handle_add_dollars pour ajouter le montant
-		handle_add_dollars(portfolio, montant_vente, date);
-	}
+    // Archivage de la vente
+    archive_sale(asset, portfolio, quantite, prix, date);
 
-	// Affichage du message de succès
-	char success_message[150];
-	snprintf(success_message, sizeof(success_message),
-			 "Actif '%s' vendu avec succès. Quantité : %.5f, Prix : %.5f.", nom, quantite, prix);
-	print_centered(success_message, GREEN);
+    // Vérification si la totalité de l'actif a été vendue
+    if (quantite == asset->historique[asset->historique_count - 1].quantite)
+    {
+        if (delete_asset(portfolio, asset->nom))
+        {
+            print_centered("Actif totalement vendu et supprimé du portefeuille.", GREEN);
+        }
+        else
+        {
+            print_centered("Erreur lors de la suppression de l'actif.", RED);
+        }
+    }
+    else
+    {
+        // Mettre à jour la quantité de l'actif après la vente
+        asset->historique[asset->historique_count - 1].quantite -= quantite;
+    }
+
+    // Recalculer les pourcentages des parts des actifs
+    sort_assets_by_percentage(portfolio);
+
+    // Demander à l'utilisateur s'il veut ajouter le montant de la vente au solde en dollars
+    char add_to_balance_message[200];
+    snprintf(add_to_balance_message, sizeof(add_to_balance_message),
+             GRAY "Souhaitez-vous ajouter le montant de %.2f $ à votre solde en dollars ? (O/N) : " RESET,
+             montant_vente);
+    if (ask_confirmation(add_to_balance_message))
+    {
+        // Ajouter le montant au solde si confirmé
+        portfolio->dollar_balance += montant_vente;
+        print_centered("Le montant de la vente a été ajouté à votre solde en dollars.", GREEN);
+    }
+    else
+    {
+        print_centered("Le montant de la vente n'a pas été ajouté à votre solde en dollars.", YELLOW);
+    }
+
+    // Affichage du message de succès
+    char success_message[150];
+    snprintf(success_message, sizeof(success_message),
+             "Actif '%s' vendu avec succès. Quantité : %.5f, Prix : %.5f.", nom, quantite, prix);
+    print_centered(success_message, GREEN);
 }
-
 
 void handle_calculate_profit(t_portfolio *portfolio)
 {

@@ -6,7 +6,7 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/21 01:10:32 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/25 03:48:36 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/12/09 20:39:24 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ float 	calculate_portfolio_value(t_portfolio *portfolio);
 void 	display_asset_percentages(t_portfolio *portfolio);
 int 	compare_assets_by_percentage(const void *a, const void *b);
 void	 sort_assets_by_percentage(t_portfolio *portfolio);
+void 	update_asset_percentages(t_portfolio *portfolio);
 
 
 #endif

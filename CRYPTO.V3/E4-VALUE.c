@@ -6,7 +6,7 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/24 18:00:48 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/24 23:59:45 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/12/09 20:39:06 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,9 +99,42 @@ int compare_assets_by_percentage(const void *a, const void *b)
 
 void sort_assets_by_percentage(t_portfolio *portfolio)
 {
-	if (!portfolio || portfolio->asset_count <= 1)
-		return;
+    if (!portfolio || portfolio->asset_count <= 1)
+        return;
 
-	// Trier les actifs en utilisant leur pourcentage
-	qsort(portfolio->assets, portfolio->asset_count, sizeof(t_asset *), compare_assets_by_percentage);
+    // Calculer la valeur totale du portefeuille
+    float total_value = calculate_portfolio_value(portfolio);
+
+    // Trier les actifs en utilisant leur pourcentage
+    qsort(portfolio->assets, portfolio->asset_count, sizeof(t_asset *), compare_assets_by_percentage);
+
+    // Mettre à jour les pourcentages des parts des actifs
+    for (int i = 0; i < portfolio->asset_count; i++)
+    {
+        t_asset *asset = portfolio->assets[i];
+        float asset_value = calculate_asset_value(asset);
+        asset->historique[asset->historique_count - 1].percent_begin = (asset_value / total_value) * 100.0f;
+    }
+}
+
+void update_asset_percentages(t_portfolio *portfolio)
+{
+    float total_value = 0.0;
+
+    // Calculer la valeur totale des actifs
+    for (int i = 0; i < portfolio->asset_count; i++) {
+        if (portfolio->assets[i]) {
+            total_value += portfolio->assets[i]->prix_moyen *
+                           portfolio->assets[i]->historique[portfolio->assets[i]->historique_count - 1].quantite;
+        }
+    }
+
+    // Mettre à jour les pourcentages
+    for (int i = 0; i < portfolio->asset_count; i++) {
+        if (portfolio->assets[i]) {
+            portfolio->assets[i]->sales[portfolio->assets[i]->sale_count - 1].percent_exit =
+                (portfolio->assets[i]->prix_moyen *
+                 portfolio->assets[i]->historique[portfolio->assets[i]->historique_count - 1].quantite / total_value) * 100;
+        }
+    }
 }

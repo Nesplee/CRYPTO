@@ -6,7 +6,7 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:00:53 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/24 16:42:23 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/12/09 15:29:04 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -208,15 +208,11 @@ int	load_portfolio(const char *filename, t_portfolio *portfolio)
 		if (strstr(line, "\"sales\": ["))
 		{
 			printf(RED "CHARGEMENT:" RESET " Détection de la section 'sales'.\n");
-			for (int i = 0; i < portfolio->asset_count; i++)
+			if (!load_sales_history(file, portfolio))
 			{
-				t_asset *asset = portfolio->assets[i];
-				if (!load_sales_history(file, asset))
-				{
-					printf("Erreur: Échec du chargement des ventes pour l'actif %s.\n", asset->nom);
-					fclose(file);
-					return (0);
-				}
+				printf("Erreur: Échec du chargement des ventes.\n");
+				fclose(file);
+				return (0);
 			}
 		}
 		else if (strstr(line, "\"transactions\": ["))

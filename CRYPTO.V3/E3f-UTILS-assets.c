@@ -6,7 +6,7 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/21 02:00:55 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/25 01:12:06 by dinguyen         ###   ########.fr       */
+/*   Updated: 2024/12/09 20:57:26 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -309,7 +309,9 @@ void archive_sale(t_asset *asset, t_portfolio *portfolio, float quantity, float 
 
     sale->percent_exit = (asset->prix_moyen != 0) ? ((sale_price - asset->prix_moyen) / asset->prix_moyen) * 100 : 0;
 
-    portfolio->dollar_balance += quantity * sale_price;
+    // Supprimer ou commenter cette ligne
+    // portfolio->dollar_balance += quantity * sale_price;
+
     asset->historique[asset->historique_count - 1].quantite -= quantity;
 
     if (asset->historique[asset->historique_count - 1].quantite <= 0)
