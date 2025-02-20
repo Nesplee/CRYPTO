@@ -6,13 +6,12 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 11:40:52 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/24 02:02:19 by dinguyen         ###   ########.fr       */
+/*   Updated: 2025/02/20 16:32:33 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
 #include "A1.master.h"
-
 
 int main(void)
 {

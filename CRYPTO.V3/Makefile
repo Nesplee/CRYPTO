@@ -6,7 +6,7 @@
 #    By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/11/21 03:26:32 by dinguyen          #+#    #+#              #
-#    Updated: 2024/11/24 18:11:51 by dinguyen         ###   ########.fr        #
+#    Updated: 2025/02/20 17:28:26 by dinguyen         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,7 +19,7 @@ SRC = E1-MENU-main.c E2a-MENU-portfolio.c E2b-HANDLE-portfolio.c E2c-UTILS-portf
 	E3f-UTILS-assets.c EE-MENU-system.c EE-UTILS-system.c EU1-Resize_and_free.c \
 	EU2-UTILS-global.c EU3-Inputs.c E4-VALUE.c main.c
 OBJ = $(SRC:.c=.o)
-NAME = portfolio_manager
+NAME = asset_manager
 HEADER = A1.master.h A2.menu.h A3.portfolio.h A4.handle.h A5.system.h A6.utils.h
 
 # Règle principale
