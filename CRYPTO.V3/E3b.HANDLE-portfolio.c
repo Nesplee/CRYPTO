@@ -6,7 +6,7 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/21 01:31:13 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/12/09 16:09:27 by dinguyen         ###   ########.fr       */
+/*   Updated: 2025/02/20 18:18:47 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -285,8 +285,6 @@ void display_current_portfolio_state(t_portfolio *portfolio)
 
 	print_centered("===========================================", GRAY);
 }
-
-
 
 void	display_all_portfolios_short(t_portfolio_manager *manager)
 {

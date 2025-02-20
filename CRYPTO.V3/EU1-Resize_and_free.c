@@ -6,7 +6,7 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:11:34 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/11/25 00:54:15 by dinguyen         ###   ########.fr       */
+/*   Updated: 2025/02/20 18:19:05 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -237,44 +237,44 @@ int	resize_portfolio(t_portfolio *portfolio)
 
 int resize_sales(t_asset *asset)
 {
-    int new_size = asset->max_sales * 2;
-    t_sale *new_sales = realloc(asset->sales, new_size * sizeof(t_sale));
-    if (!new_sales)
-    {
-        printf(RED "Erreur: Impossible de redimensionner les ventes.\n" RESET);
-        return 0;
-    }
+	int new_size = asset->max_sales * 2;
+	t_sale *new_sales = realloc(asset->sales, new_size * sizeof(t_sale));
+	if (!new_sales)
+	{
+		printf(RED "Erreur: Impossible de redimensionner les ventes.\n" RESET);
+		return 0;
+	}
 
-    asset->sales = new_sales;
-    asset->max_sales = new_size;
-    printf("DEBUG: Redimensionnement du tableau des ventes réussi.\n");
+	asset->sales = new_sales;
+	asset->max_sales = new_size;
+	printf("DEBUG: Redimensionnement du tableau des ventes réussi.\n");
 
-    return 1;
+	return 1;
 }
 
 
 int resize_history(t_asset *asset)
 {
-    t_history *nouvel_historique;
-    int nouvelle_taille;
+	t_history *nouvel_historique;
+	int nouvelle_taille;
 
-    if (!asset)
-    {
-        return 0;
-    }
+	if (!asset)
+	{
+		return 0;
+	}
 
-    nouvelle_taille = asset->max_historique * 2;
-    nouvel_historique = (t_history *)realloc(asset->historique, sizeof(t_history) * nouvelle_taille);
-    if (!nouvel_historique)
-    {
-        printf(RED "Erreur: Échec de redimensionnement de l'historique.\n" RESET);
-        return 0;
-    }
+	nouvelle_taille = asset->max_historique * 2;
+	nouvel_historique = (t_history *)realloc(asset->historique, sizeof(t_history) * nouvelle_taille);
+	if (!nouvel_historique)
+	{
+		printf(RED "Erreur: Échec de redimensionnement de l'historique.\n" RESET);
+		return 0;
+	}
 
-    asset->historique = nouvel_historique;
-    asset->max_historique = nouvelle_taille;
+	asset->historique = nouvel_historique;
+	asset->max_historique = nouvelle_taille;
 
-    return 1;
+	return 1;
 }
 
 

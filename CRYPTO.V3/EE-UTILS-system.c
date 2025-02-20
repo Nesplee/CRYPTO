@@ -6,7 +6,7 @@
 /*   By: dinguyen <dinguyen@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/21 03:01:52 by dinguyen          #+#    #+#             */
-/*   Updated: 2024/12/09 15:35:28 by dinguyen         ###   ########.fr       */
+/*   Updated: 2025/02/20 18:18:30 by dinguyen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,156 +111,156 @@ int save_content(FILE *file, const t_portfolio *portfolio)
 	fprintf(file, "\t\"total_profit_loss\": %.2f,\n", portfolio->total_profit_loss);
 	return 1;
 }
-int load_assets_history(FILE *file, t_portfolio *portfolio)
+int	load_assets_history(FILE *file, t_portfolio *portfolio)
 {
-    char line[1024], buffer[256];
-    int asset_index = 0;
+	char line[1024], buffer[256];
+	int asset_index = 0;
 
-    printf(RED "CHARGEMENT:" RESET " Début du chargement des actifs...\n");
+	printf(RED "CHARGEMENT:" RESET " Début du chargement des actifs...\n");
 
-    while (fgets(line, sizeof(line), file))
-    {
-        trim_whitespace(line);
-        if (strstr(line, "]")) // Fin de la section "assets"
-        {
-            printf(RED "CHARGEMENT:" RESET " Fin de la section 'assets' détectée.\n");
-            break;
-        }
+	while (fgets(line, sizeof(line), file))
+	{
+		trim_whitespace(line);
+		if (strstr(line, "]")) // Fin de la section "assets"
+		{
+			printf(RED "CHARGEMENT:" RESET " Fin de la section 'assets' détectée.\n");
+			break;
+		}
 
-        if (strstr(line, "{")) // Début d'un actif
-        {
-            t_asset *asset = malloc(sizeof(t_asset));
-            if (!asset)
-            {
-                printf("Erreur: Impossible d'allouer un actif.\n");
-                return 0;
-            }
-            memset(asset, 0, sizeof(t_asset));
+		if (strstr(line, "{")) // Début d'un actif
+		{
+			t_asset *asset = malloc(sizeof(t_asset));
+			if (!asset)
+			{
+				printf("Erreur: Impossible d'allouer un actif.\n");
+				return 0;
+			}
+			memset(asset, 0, sizeof(t_asset));
 
-            // Lire les propriétés de l'actif
-            while (fgets(line, sizeof(line), file) && !strstr(line, "}"))
-            {
-                trim_whitespace(line);
-                if (sscanf(line, " \"name\": \"%[^\"]\",", buffer) == 1)
-                {
-                    asset->nom = strdup(buffer);
-                    printf(RED "CHARGEMENT:" RESET " Actif chargé : %s\n", asset->nom);
-                }
-                else if (sscanf(line, " \"prix_achat\": %f,", &asset->prix_achat) == 1)
-                {
-                    printf(RED "CHARGEMENT:" RESET " Prix d'achat : %.5f\n", asset->prix_achat);
-                }
-                else if (sscanf(line, " \"prix_moyen\": %f,", &asset->prix_moyen) == 1)
-                {
-                    printf(RED "CHARGEMENT:" RESET " Prix moyen : %.5f\n", asset->prix_moyen);
-                }
-                else if (strstr(line, "\"historique\": ["))
-                {
-                    // Initialiser l'historique
-                    asset->max_historique = INITIAL_SIZE; // Taille initiale
-                    asset->historique = malloc(asset->max_historique * sizeof(t_history));
-                    asset->historique_count = 0;
+			// Lire les propriétés de l'actif
+			while (fgets(line, sizeof(line), file) && !strstr(line, "}"))
+			{
+				trim_whitespace(line);
+				if (sscanf(line, " \"name\": \"%[^\"]\",", buffer) == 1)
+				{
+					asset->nom = strdup(buffer);
+					printf(RED "CHARGEMENT:" RESET " Actif chargé : %s\n", asset->nom);
+				}
+				else if (sscanf(line, " \"prix_achat\": %f,", &asset->prix_achat) == 1)
+				{
+					printf(RED "CHARGEMENT:" RESET " Prix d'achat : %.5f\n", asset->prix_achat);
+				}
+				else if (sscanf(line, " \"prix_moyen\": %f,", &asset->prix_moyen) == 1)
+				{
+					printf(RED "CHARGEMENT:" RESET " Prix moyen : %.5f\n", asset->prix_moyen);
+				}
+				else if (strstr(line, "\"historique\": ["))
+				{
+					// Initialiser l'historique
+					asset->max_historique = INITIAL_SIZE; // Taille initiale
+					asset->historique = malloc(asset->max_historique * sizeof(t_history));
+					asset->historique_count = 0;
 
-                    if (!asset->historique)
-                    {
-                        printf("Erreur: Impossible d'allouer la mémoire pour l'historique de l'actif %s\n", asset->nom);
-                        free(asset);
-                        return 0;
-                    }
+					if (!asset->historique)
+					{
+						printf("Erreur: Impossible d'allouer la mémoire pour l'historique de l'actif %s\n", asset->nom);
+						free(asset);
+						return 0;
+					}
 
-                    printf(RED "CHARGEMENT:" RESET " Début de l'historique détecté.\n");
+					printf(RED "CHARGEMENT:" RESET " Début de l'historique détecté.\n");
 
-                    while (fgets(line, sizeof(line), file) && !strstr(line, "]"))
-                    {
-                        trim_whitespace(line);
-                        if (strstr(line, "{"))
-                        {
-                            t_history history_entry;
-                            memset(&history_entry, 0, sizeof(t_history));
+					while (fgets(line, sizeof(line), file) && !strstr(line, "]"))
+					{
+						trim_whitespace(line);
+						if (strstr(line, "{"))
+						{
+							t_history history_entry;
+							memset(&history_entry, 0, sizeof(t_history));
 
-                            while (fgets(line, sizeof(line), file) && !strstr(line, "}"))
-                            {
-                                trim_whitespace(line);
-                                if (sscanf(line, " \"date\": \"%[^\"]\",", buffer) == 1)
-                                {
-                                    history_entry.date = strdup(buffer);
-                                    printf(RED "CHARGEMENT:" RESET " Date historique : %s\n", history_entry.date);
-                                }
-                                else if (sscanf(line, " \"prix\": %f,", &history_entry.prix) == 1)
-                                {
-                                    printf(RED "CHARGEMENT:" RESET " Prix historique : %.5f\n", history_entry.prix);
-                                }
-                                else if (sscanf(line, " \"quantite\": %f,", &history_entry.quantite) == 1)
-                                {
-                                    printf(RED "CHARGEMENT:" RESET " Quantité historique : %.5f\n", history_entry.quantite);
-                                }
-                                else if (sscanf(line, " \"diff_begin\": %f,", &history_entry.diff_begin) == 1)
-                                {
-                                    // Traitez diff_begin si nécessaire
-                                }
-                                else if (sscanf(line, " \"percent_begin\": %f", &history_entry.percent_begin) == 1)
-                                {
-                                    // Traitez percent_begin si nécessaire
-                                }
-                            }
+							while (fgets(line, sizeof(line), file) && !strstr(line, "}"))
+							{
+								trim_whitespace(line);
+								if (sscanf(line, " \"date\": \"%[^\"]\",", buffer) == 1)
+								{
+									history_entry.date = strdup(buffer);
+									printf(RED "CHARGEMENT:" RESET " Date historique : %s\n", history_entry.date);
+								}
+								else if (sscanf(line, " \"prix\": %f,", &history_entry.prix) == 1)
+								{
+									printf(RED "CHARGEMENT:" RESET " Prix historique : %.5f\n", history_entry.prix);
+								}
+								else if (sscanf(line, " \"quantite\": %f,", &history_entry.quantite) == 1)
+								{
+									printf(RED "CHARGEMENT:" RESET " Quantité historique : %.5f\n", history_entry.quantite);
+								}
+								else if (sscanf(line, " \"diff_begin\": %f,", &history_entry.diff_begin) == 1)
+								{
+									// Traitez diff_begin si nécessaire
+								}
+								else if (sscanf(line, " \"percent_begin\": %f", &history_entry.percent_begin) == 1)
+								{
+									// Traitez percent_begin si nécessaire
+								}
+							}
 
-                            // Ajouter l'entrée d'historique à l'actif
-                            if (asset->historique_count >= asset->max_historique)
-                            {
-                                asset->max_historique *= 2;
-                                t_history *new_historique = realloc(asset->historique, asset->max_historique * sizeof(t_history));
-                                if (!new_historique)
-                                {
-                                    printf("Erreur: Impossible de redimensionner l'historique.\n");
-                                    // Libérer la mémoire allouée précédemment
-                                    for (int k = 0; k < asset->historique_count; k++)
-                                    {
-                                        free(asset->historique[k].date);
-                                    }
-                                    free(asset->historique);
-                                    free(asset);
-                                    return 0;
-                                }
-                                asset->historique = new_historique;
-                            }
-                            asset->historique[asset->historique_count++] = history_entry;
-                        }
-                    }
-                }
-                else if (sscanf(line, " \"is_sold_out\": %s", buffer) == 1)
-                {
-                    asset->is_sold_out = strcmp(buffer, "true") == 0 ? 1 : 0;
-                }
-            }
+							// Ajouter l'entrée d'historique à l'actif
+							if (asset->historique_count >= asset->max_historique)
+							{
+								asset->max_historique *= 2;
+								t_history *new_historique = realloc(asset->historique, asset->max_historique * sizeof(t_history));
+								if (!new_historique)
+								{
+									printf("Erreur: Impossible de redimensionner l'historique.\n");
+									// Libérer la mémoire allouée précédemment
+									for (int k = 0; k < asset->historique_count; k++)
+									{
+										free(asset->historique[k].date);
+									}
+									free(asset->historique);
+									free(asset);
+									return 0;
+								}
+								asset->historique = new_historique;
+							}
+							asset->historique[asset->historique_count++] = history_entry;
+						}
+					}
+				}
+				else if (sscanf(line, " \"is_sold_out\": %s", buffer) == 1)
+				{
+					asset->is_sold_out = strcmp(buffer, "true") == 0 ? 1 : 0;
+				}
+			}
 
-            // Ajouter l'actif au portefeuille
-            if (asset_index >= portfolio->max_assets)
-            {
-                portfolio->max_assets *= 2;
-                t_asset **new_assets = realloc(portfolio->assets, portfolio->max_assets * sizeof(t_asset *));
-                if (!new_assets)
-                {
-                    printf("Erreur: Impossible de redimensionner le tableau des actifs.\n");
-                    // Libérer la mémoire allouée précédemment
-                    for (int k = 0; k < asset->historique_count; k++)
-                    {
-                        free(asset->historique[k].date);
-                    }
-                    free(asset->historique);
-                    free(asset);
-                    return 0;
-                }
-                portfolio->assets = new_assets;
-            }
-            portfolio->assets[asset_index++] = asset;
-            printf(RED "CHARGEMENT:" RESET " Actif ajouté avec succès : %s\n", asset->nom);
-        }
-    }
+			// Ajouter l'actif au portefeuille
+			if (asset_index >= portfolio->max_assets)
+			{
+				portfolio->max_assets *= 2;
+				t_asset **new_assets = realloc(portfolio->assets, portfolio->max_assets * sizeof(t_asset *));
+				if (!new_assets)
+				{
+					printf("Erreur: Impossible de redimensionner le tableau des actifs.\n");
+					// Libérer la mémoire allouée précédemment
+					for (int k = 0; k < asset->historique_count; k++)
+					{
+						free(asset->historique[k].date);
+					}
+					free(asset->historique);
+					free(asset);
+					return 0;
+				}
+				portfolio->assets = new_assets;
+			}
+			portfolio->assets[asset_index++] = asset;
+			printf(RED "CHARGEMENT:" RESET " Actif ajouté avec succès : %s\n", asset->nom);
+		}
+	}
 
-    portfolio->asset_count = asset_index;
-    printf(RED "CHARGEMENT:" RESET " Nombre total d'actifs chargés : %d\n", portfolio->asset_count);
+	portfolio->asset_count = asset_index;
+	printf(RED "CHARGEMENT:" RESET " Nombre total d'actifs chargés : %d\n", portfolio->asset_count);
 
-    return 1;
+	return 1;
 }
 
 int load_sales_history(FILE *file, t_portfolio *portfolio)
