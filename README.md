@@ -36,10 +36,10 @@ cd CRYPTO.V3
 make
 
 # Run the Program
-Option 1: Command Line Mode
+# Option 1: Command Line Mode
 ./asset_manager
 
-Option 2: Window Mode
+# Option 2: Window Mode
 ./launcher
 ```
 <div align="center">
