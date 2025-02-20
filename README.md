@@ -90,20 +90,72 @@ Option 2: Window Mode
 
 ## User Guide
 
+<div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+
+<div style="flex: 1; text-align: center;">
+<h3>Portfolio Management</h3>
+
+- Create/Delete portfolios
+- Add/Withdraw funds
+- Track balance
 </div>
 
-| <img src="IMAGES/Asset_manager2.png" alt="Asset Operations" width="100%"/> | <h3>Key Operations</h3><br>1. **Portfolio Management**<br>   - Create/Delete portfolios<br>   - Add/Withdraw funds<br>   - Track balance<br><br>2. **Asset Operations**<br>   - Buy/Sell assets<br>   - Update prices<br>   - View transaction history<br>   - Calculate profits/losses<br>   - Simulate sales<br><br>3. **Data Analysis**<br>   - Performance tracking<br>   - Portfolio distribution<br>   - Historical data<br>   - PNL calculations |
-|---|---|
+<div style="flex: 1; text-align: center;">
+<h3>Asset Operations</h3>
+
+- Buy/Sell assets
+- Update prices
+- View transactions
+- Calculate profits/losses
+- Simulate sales
+</div>
+
+<div style="flex: 1; text-align: center;">
+<h3>Data Analysis</h3>
+
+- Performance tracking
+- Portfolio distribution
+- Historical data
+- PNL calculations
+</div>
+
+</div>
+
+<img src="IMAGES/Asset_manager2.png" alt="Asset Operations" width="70%"/>
+
+</div>
+
+<div align="center">
 
 ## Technical Details
-- Written in C
-- Python/Dash for visualization
-- Make-based compilation
-- Terminal-based UI
-- Real-time data processing
 
-## License
-[MIT License](LICENSE)
+</div>
 
-## Author
-Developed by Nesplee (2024)
+- 🔧 Written in C
+- 🐍 Python/Dash for visualization
+- 📦 Make-based compilation
+- 💻 Terminal-based UI
+- ⚡ Real-time data processing
+
+<div align="center">
+<h3>💻 Tech Stack 💻</h3>
+
+<div align="center" style="display: flex; gap: 10px; justify-content: center;">
+<a href="https://en.cppreference.com/w/c/language"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/c/c-original.svg" width="45" height="45"/></a>
+<a href="https://www.python.org/"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg" width="45" height="45"/></a>
+<a href="https://www.w3.org/html/"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/html5/html5-original.svg" width="45" height="45"/></a>
+<a href="https://www.w3.org/css/"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/css3/css3-original.svg" width="45" height="45"/></a>
+<a href="https://code.visualstudio.com/"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/vscode/vscode-original.svg" width="45" height="45"/></a>
+<a href="https://www.linux.org/"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/linux/linux-original.svg" width="45" height="45"/></a>
+</div>
+</div>
+
+<div align="center">
+
+## 📜 License & Author
+
+<sub>Developed with ❤️ by <a href="https://github.com/Nesplee">Nesplee</a></sub>
+
+<sub>Copyright © 2024 | <a href="LICENSE">MIT License</a></sub>
+
+</div>
