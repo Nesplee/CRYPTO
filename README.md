@@ -90,11 +90,11 @@ Option 2: Window Mode
 
 <div align="center">
 
-## User Guide
+# User Guide
 
-<div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
 
-<div style="flex: 1; text-align: center;">
+<div style="flex: 1; text-align: center; padding: 0 15px;">
 <h3>Portfolio Management</h3>
 
 - Create/Delete portfolios
@@ -102,7 +102,7 @@ Option 2: Window Mode
 - Track balance
 </div>
 
-<div style="flex: 1; text-align: center;">
+<div style="flex: 1; text-align: center; padding: 0 15px;">
 <h3>Asset Operations</h3>
 
 - Buy/Sell assets
@@ -112,7 +112,7 @@ Option 2: Window Mode
 - Simulate sales
 </div>
 
-<div style="flex: 1; text-align: center;">
+<div style="flex: 1; text-align: center; padding: 0 15px;">
 <h3>Data Analysis</h3>
 
 - Performance tracking
