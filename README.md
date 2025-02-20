@@ -14,6 +14,8 @@ During my first month at 42 School, I developed this program as preparation for 
 
 ## Getting Started
 
+Asset Manager offers a complete solution for tracking your investments. Monitor your portfolio in real-time, manage transactions, analyze performance metrics, and visualize your data through an interactive dashboard. Whether you're tracking simple trades or managing complex asset distributions, this tool provides all the essential features for effective portfolio management.
+
 </div>
 
 ### Clone & Setup
