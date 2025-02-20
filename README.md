@@ -92,36 +92,14 @@ Option 2: Window Mode
 
 # User Guide
 
-<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+| Portfolio Management | Asset Operations | Data Analysis |
+|:-------------------:|:----------------:|:-------------:|
+| - Create/Delete portfolios | - Buy/Sell assets | - Performance tracking |
+| - Add/Withdraw funds | - Update prices | - Portfolio distribution |
+| - Track balance | - View transactions | - Historical data |
+| | - Calculate profits/losses | - PNL calculations |
+| | - Simulate sales | |
 
-<div style="flex: 1; text-align: center; padding: 0 15px;">
-<h3>Portfolio Management</h3>
-
-- Create/Delete portfolios
-- Add/Withdraw funds
-- Track balance
-</div>
-
-<div style="flex: 1; text-align: center; padding: 0 15px;">
-<h3>Asset Operations</h3>
-
-- Buy/Sell assets
-- Update prices
-- View transactions
-- Calculate profits/losses
-- Simulate sales
-</div>
-
-<div style="flex: 1; text-align: center; padding: 0 15px;">
-<h3>Data Analysis</h3>
-
-- Performance tracking
-- Portfolio distribution
-- Historical data
-- PNL calculations
-</div>
-
-</div>
 
 <img src="IMAGES/Asset_manager2.png" alt="Asset Operations" width="70%"/>
 
