@@ -4,7 +4,7 @@
 
 # ASSET MANAGER - Keep an eye on your moves
 
-After one month at 42 School and to better prepare for my first exam, I developed this program to review fundamental concepts such as memory allocation/free, multiple structure management, and header manipulation.
+During my first month at 42 School, I developed this program as preparation for my initial exam. It allowed me to strengthen core programming concepts learned during the curriculum, including memory management, complex data structures, and header file organization.
 
 <img src="IMAGES/Asset_manager1.jpg" alt="Portfolio Overview" width="70%"/>
 
