@@ -4,6 +4,8 @@
 
 # ASSET MANAGER - Keep an eye on your moves
 
+After one month at 42 School and to better prepare for my first exam, I developed this program to review fundamental concepts such as memory allocation/free, multiple structure management, and header manipulation.
+
 <img src="IMAGES/Asset_manager1.jpg" alt="Portfolio Overview" width="70%"/>
 
 </div>
