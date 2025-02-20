@@ -96,10 +96,8 @@ Option 2: Window Mode
 |:-------------------:|:----------------:|:-------------:|
 | - Create/Delete portfolios | - Buy/Sell assets | - Performance tracking |
 | - Add/Withdraw funds | - Update prices | - Portfolio distribution |
-| - Track balance | - View transactions | - Historical data |
-| | - Calculate profits/losses | - PNL calculations |
-| | - Simulate sales | |
-
+| - Track balance | - Calculate profits/losses | - Historical data |
+| - View transactions | - Simulate sales | - PNL calculations |
 
 <img src="IMAGES/Asset_manager2.png" alt="Asset Operations" width="70%"/>
 
