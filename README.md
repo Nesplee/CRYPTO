@@ -92,7 +92,7 @@ Option 2: Window Mode
 
 # User Guide
 
-| **Portfolio Management** | **Asset Operations** | **Data Analysis** |
+| ***Portfolio Management*** | ***Asset Operations*** | ***Data Analysis*** |
 |:-------------------:|:----------------:|:-------------:|
 | - Create/Delete portfolios | - Buy/Sell assets | - Performance tracking |
 | - Add/Withdraw funds | - Update prices | - Portfolio distribution |
