@@ -92,32 +92,8 @@ Option 2: Window Mode
 
 </div>
 
-<div style="display: flex; align-items: flex-start;">
-  <div style="flex: 1;">
-    <img src="IMAGES/Asset_manager2.png" alt="Asset Operations" width="100%"/>
-  </div>
-  <div style="flex: 1; padding-left: 20px;">
-    <h3>Key Operations</h3>
-
-    1. **Portfolio Management**
-       - Create/Delete portfolios
-       - Add/Withdraw funds
-       - Track balance
-
-    2. **Asset Operations**
-       - Buy/Sell assets
-       - Update prices
-       - View transaction history
-       - Calculate profits/losses
-       - Simulate sales
-
-    3. **Data Analysis**
-       - Performance tracking
-       - Portfolio distribution
-       - Historical data
-       - PNL calculations
-  </div>
-</div>
+| <img src="IMAGES/Asset_manager2.png" alt="Asset Operations" width="100%"/> | <h3>Key Operations</h3><br>1. **Portfolio Management**<br>   - Create/Delete portfolios<br>   - Add/Withdraw funds<br>   - Track balance<br><br>2. **Asset Operations**<br>   - Buy/Sell assets<br>   - Update prices<br>   - View transaction history<br>   - Calculate profits/losses<br>   - Simulate sales<br><br>3. **Data Analysis**<br>   - Performance tracking<br>   - Portfolio distribution<br>   - Historical data<br>   - PNL calculations |
+|---|---|
 
 ## Technical Details
 - Written in C
